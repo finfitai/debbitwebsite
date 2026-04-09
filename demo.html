@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Demo | debbit OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .demo-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; padding-top: 140px; min-height: 100vh; align-items: center; padding-bottom: 80px;}
+        .demo-form-card { background: var(--bg-card); padding: 3rem; border-radius: 24px; border: 1px solid var(--border-light); box-shadow: 0 40px 80px rgba(0,0,0,0.5); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-secondary); font-size: 14px; }
+        .form-control { width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-light); border-radius: 8px; color: white; font-family: var(--font-body); font-size: 15px; }
+        .form-control:focus { outline: none; border-color: var(--brand-primary); }
+        select.form-control { appearance: none; cursor: pointer; }
+        .preview-img { width: 100%; height: 500px; background: radial-gradient(circle at center, rgba(157, 78, 221, 0.1) 0%, var(--bg-card) 70%); border-radius: 24px; border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); color: var(--brand-primary); box-shadow: inset 0 0 40px rgba(157, 78, 221, 0.05); }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg">
+        <div class="orb orb-pink"></div>
+        <div class="orb orb-purple"></div>
+        <div class="noise-overlay"></div>
+    </div>
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none;">
+                    <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="120" height="40">
+                        <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
+                        <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
+                        <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
+                    </svg>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container demo-layout">
+        <div class="demo-form-card reveal">
+            <h1 style="font-size: 32px; margin-bottom: 24px;">See how debbit works for your business</h1>
+            <form onsubmit="event.preventDefault(); alert('We will contact you shortly!');">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Business Type</label>
+                    <select class="form-control" required>
+                        <option value="">Select an industry...</option>
+                        <option value="cafe">Cafe & Restaurant</option>
+                        <option value="retail">Retail Store</option>
+                        <option value="distributor">Distributor</option>
+                        <option value="service">Service Business</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Phone (WhatsApp Preferred)</label>
+                    <input type="text" class="form-control" required placeholder="+60 12-345 6789">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" required placeholder="john@company.com">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px; padding: 16px;">Secure My Demo</button>
+            </form>
+        </div>
+        
+        <div class="reveal delay-2 img-wrap img-wrap-tall">
+            <img src="images/ui3.jpg" alt="Dynamic Software Preview" style="object-position: center; border-radius: 0; box-shadow: none;">
+        </div>
+    </div>
+
+    <script src="animations.js"></script>
+</body>
+</html>

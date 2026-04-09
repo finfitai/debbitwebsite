@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | debbit OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .pricing-section { padding-top: 160px; padding-bottom: 120px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; align-items: center; margin-top: 4rem; }
+        .pricing-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 24px; padding: 3rem 2rem; position: relative; }
+        .pricing-card.highlight { border-color: var(--brand-primary); transform: scale(1.05); box-shadow: 0 20px 60px rgba(157, 78, 221, 0.15); background: linear-gradient(180deg, rgba(157, 78, 221, 0.05) 0%, var(--bg-card) 100%); z-index: 2; }
+        .pricing-card h3 { font-size: 24px; margin-bottom: 8px; }
+        .pricing-card .desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 32px; height: 40px; }
+        .price { font-size: 48px; font-weight: 800; font-family: var(--font-head); margin-bottom: 32px; color: var(--text-primary); }
+        .price span { font-size: 16px; color: var(--text-secondary); font-weight: 400; font-family: var(--font-body); }
+        .pricing-ul { list-style: none; margin-bottom: 32px; }
+        .pricing-ul li { margin-bottom: 16px; font-size: 15px; position: relative; padding-left: 28px; }
+        .pricing-ul li::before { content: '✓'; position: absolute; left: 0; color: var(--brand-primary); font-weight: bold; }
+        .pricing-card.highlight .btn { width: 100%; }
+        
+        .faq-section { max-width: 800px; margin: 0 auto; padding-bottom: 120px; }
+        .accordion { border-bottom: 1px solid var(--border-light); padding: 24px 0; cursor: pointer; }
+        .accordion-title { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 18px; transition: color 0.2s; }
+        .accordion:hover .accordion-title { color: var(--brand-accent); }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg">
+        <div class="orb orb-pink"></div>
+        <div class="orb orb-purple"></div>
+        <div class="noise-overlay"></div>
+    </div>
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none;">
+                    <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="120" height="40">
+                        <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
+                        <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
+                        <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
+                    </svg>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="features.html">Features</a>
+                <a href="pricing.html" class="active">Pricing</a>
+                <a href="industries.html">Industries</a>
+            </div>
+            <div class="nav-buttons">
+                <a href="#" class="btn btn-secondary">Login</a>
+                <a href="demo.html" class="btn btn-primary">Book Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pricing-section">
+        <div class="container text-center reveal">
+            <h1 class="hero-title" style="font-size: 56px;">Simple, transparent pricing</h1>
+            <p class="hero-p" style="margin: 0 auto;">No hidden fees. No surprises. All plans include AI CFO, POS, Inventory, and Compliance.</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card reveal delay-1">
+                    <h3>Basic</h3>
+                    <p class="desc">Essential tools to get started.</p>
+                    <div class="price">$19<span>/month</span></div>
+                    <ul class="pricing-ul" style="text-align: left;">
+                        <li>Offline-first POS</li>
+                        <li>Basic Inventory Tracking</li>
+                        <li>Single location</li>
+                    </ul>
+                    <a href="demo.html" class="btn btn-secondary" style="width: 100%;">Start Free Trial</a>
+                </div>
+
+                <div class="pricing-card highlight reveal delay-2">
+                    <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--brand-primary); color: white; padding: 4px 16px; border-radius: 50px; font-size: 12px; font-weight: bold; text-transform: uppercase;">Most Popular</div>
+                    <h3>Value</h3>
+                    <p class="desc">The complete operating system.</p>
+                    <div class="price">$79<span>/month</span></div>
+                    <ul class="pricing-ul" style="text-align: left;">
+                        <li>Everything in Basic</li>
+                        <li>AI CFO & Profit Insights</li>
+                        <li>LHDN e-Invoicing Compliance</li>
+                        <li>WhatsApp Integration</li>
+                    </ul>
+                    <a href="demo.html" class="btn btn-primary">Join Waitlist</a>
+                </div>
+
+                <div class="pricing-card reveal delay-3">
+                    <h3>Custom</h3>
+                    <p class="desc">For advanced workflows and scale.</p>
+                    <div class="price">$199<span>/month</span></div>
+                    <ul class="pricing-ul" style="text-align: left;">
+                        <li>Everything in Value</li>
+                        <li>20+ Users / Logins</li>
+                        <li>API & Custom Integrations</li>
+                        <li>Dedicated Support Manager</li>
+                    </ul>
+                    <a href="demo.html" class="btn btn-secondary" style="width: 100%;">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section reveal">
+        <h2 style="font-size: 32px; text-align: center; margin-bottom: 40px;">Frequently Asked Questions</h2>
+        <div class="accordion">
+            <div class="accordion-title">Is this compliant with LHDN e-Invoicing? <span>+</span></div>
+        </div>
+        <div class="accordion">
+            <div class="accordion-title">Do I need an accountant if I use debbit? <span>+</span></div>
+        </div>
+        <div class="accordion">
+            <div class="accordion-title">Does the POS work without an internet connection? <span>+</span></div>
+        </div>
+    </section>
+
+    <script src="animations.js"></script>
+</body>
+</html>

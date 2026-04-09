@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>debbit | The Business OS</title>
-    <meta name="description" content="Subscribe for early access. debbit is a spectacular next-gen Business Operating System for SMEs.">
+    <title>debbit | The Business Operating System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,156 +16,251 @@
         <div class="orb orb-purple"></div>
         <div class="noise-overlay"></div>
     </div>
-
-    <nav class="navbar reveal">
+    <nav class="navbar" id="navbar">
         <div class="container nav-container">
             <div class="logo">
-                <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="140" height="48">
-                    <!-- Changed text to white for dark mode -->
-                    <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
-                    <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
-                    <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
-                </svg>
+                <a href="index.html" style="text-decoration: none;">
+                    <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="120" height="40">
+                        <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
+                        <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
+                        <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
+                    </svg>
+                </a>
             </div>
             <div class="nav-links">
-                <a href="#desktop">Desktop</a>
-                <a href="#cloud">Cloud</a>
-                <a href="#features">Tech</a>
+                <a href="features.html">Features</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="industries.html">Industries</a>
+            </div>
+            <div class="nav-buttons">
+                <a href="#" class="btn btn-secondary">Login</a>
+                <a href="demo.html" class="btn btn-primary">Book Demo</a>
             </div>
         </div>
     </nav>
 
     <header class="hero">
-        <div class="container hero-container">
-            <div class="badge reveal coming-soon-badge">
-                <span class="badge-dot pulse-fast"></span>
-                <span class="coming-text">COMING SOON</span>
-                <span class="launch-text">KL & Jakarta Launch</span>
-            </div>
-            <h1 class="hero-title reveal delay-1">
-                The business OS.<br>
-                <span class="gradient-text">Spectacularly</span> smart.
-            </h1>
-            <p class="hero-subtitle reveal delay-2">
-                Replace fragmented tools and archaic spreadsheets. debbit gives your SME the power of enterprise AI—offline-first POS, true FIFO inventory, and automated compliance—in one impossibly sleek ecosystem.
-            </p>
-            
-            <div class="subscription-box reveal delay-3">
-                <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
-                    <input type="email" placeholder="Enter your email to get early access..." required class="email-input">
-                    <button type="submit" class="btn btn-glow">Join Waitlist</button>
-                </form>
-                <p class="sub-text">Spot limited for 2026 launch. Secure early access now.</p>
-            </div>
-            
-            <!-- Sleek Glass Mockup Representation -->
-            <div class="hero-glass-mockup reveal delay-4">
-                <div class="mockup-header">
-                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <div class="container grid-2">
+            <div class="hero-content reveal">
+                <div style="display: inline-flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: 50px; background: rgba(237, 156, 177, 0.05); border: 1px solid rgba(237, 156, 177, 0.4); box-shadow: 0 0 20px rgba(237, 156, 177, 0.2); margin-bottom: 24px; animation: slow-glow 3s infinite alternate;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff3366; box-shadow: 0 0 10px #ff3366; animation: blink-fast 1s infinite;"></span>
+                    <strong style="color: var(--brand-accent); letter-spacing: 2px;">COMING SOON</strong>
+                    <span style="border-left: 1px solid var(--border-light); padding-left: 12px; font-size: 14px; opacity: 0.8;">Kuala Lumpur & Jakarta</span>
                 </div>
-                <div class="glass-content">
-                    <div class="glass-sidebar">
-                        <div class="side-item active"></div>
-                        <div class="side-item"></div>
-                        <div class="side-item"></div>
-                    </div>
-                    <div class="glass-main">
-                        <div class="chart-container">
-                            <div class="chart-bar pink" style="height: 40%"></div>
-                            <div class="chart-bar purple" style="height: 70%"></div>
-                            <div class="chart-bar pink" style="height: 55%"></div>
-                            <div class="chart-bar white" style="height: 90%"></div>
-                        </div>
-                        <div class="data-row">
-                            <div class="data-pill"></div>
-                            <div class="data-line"></div>
-                        </div>
-                    </div>
+                <h1 class="hero-title">Run your entire business on <span class="text-gradient">one system.</span></h1>
+                <p class="hero-p">
+                    debbit is an AI-powered Business Operating System for SMEs —
+                    manage sales, inventory, accounting, compliance, and cash flow in one platform.<br><br>
+                    <strong>No spreadsheets. No guesswork. No chaos.</strong>
+                </p>
+                <div class="nav-buttons">
+                    <a href="demo.html" class="btn btn-primary">Book a Demo</a>
+                    <a href="#" class="btn btn-secondary">Join Waitlist</a>
+                </div>
+            </div>
+            
+            <div class="hero-mockup-wrapper reveal delay-2">
+                <div class="glass-panel panel-main">
+                    <div style="position: absolute; top: 0; width: 100%; padding: 12px; background: rgba(11,15,20,0.9); border-bottom: 1px solid rgba(255,255,255,0.05); color:#9CA3AF; font-size:12px; z-index: 10;">dashboard / overview</div>
+                    <img src="images/ui2.jpg" alt="debbit UI Mockup">
+                </div>
+                <div class="glass-panel panel-float-1">
+                    <div style="color:var(--brand-accent); font-weight:bold; font-size:12px; margin-bottom:5px;">AI CFO ALERT</div>
+                    <p style="font-size:12px;">Supplier material cost increased by 4.2%. Margin warning.</p>
+                </div>
+                <div class="glass-panel panel-float-2">
+                    <div style="color:var(--brand-primary); font-weight:bold; font-size:12px; margin-bottom:5px;">INVENTORY ALERT</div>
+                    <p style="font-size:12px;">Milk (Batch #802) expires in 2 days. Recommend promo.</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="section" id="desktop">
-        <div class="container grid-container">
-            <div class="text-content reveal">
-                <h3 class="gradient-badge">Offline-First</h3>
-                <h2 class="section-title">Never drop<br>a transaction.</h2>
-                <p class="section-description">
-                    debbit Desktop is a high-octane POS system built natively. It processes sales instantly, entirely independent of internet drops. When the connection returns, it syncs flawlessly.
-                </p>
-            </div>
-            <div class="visual-content reveal delay-2">
-                <div class="glass-card dramatic-tilt">
-                    <div class="neon-ring">
-                        <span>POS</span>
-                    </div>
-                    <div class="pulse-line"></div>
-                </div>
-            </div>
+    <!-- TRUST STRIP -->
+    <div class="trust-strip reveal delay-3">
+        <div class="container trust-items">
+            <div class="trust-item"><span>✦</span> Built for SMEs in SE-Asia</div>
+            <div class="trust-item"><span>✦</span> LHDN e-Invoicing Ready</div>
+            <div class="trust-item"><span>✦</span> Offline POS + Cloud Sync</div>
+            <div class="trust-item"><span>✦</span> AI CFO Included</div>
         </div>
-    </section>
+    </div>
 
-    <section class="section" id="cloud">
-        <div class="container grid-container reverse">
-            <div class="text-content reveal">
-                <h3 class="gradient-badge">AI Cloud</h3>
-                <h2 class="section-title">Your financial<br>command center.</h2>
-                <p class="section-description">
-                    Access ultimate oversight from any device. The cloud dashboard autonomously analyzes business health, tracks vital metrics, and flags anomalies like missing receipts—keeping you legal without lifting a finger.
-                </p>
-            </div>
-            <div class="visual-content reveal delay-2">
-                <div class="glass-card bento-mini">
-                    <div class="dash-item tall"></div>
-                    <div class="dash-item wide"></div>
-                    <div class="dash-item glow"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section feature-section" id="features">
+    <!-- THE PROBLEM -->
+    <section class="section">
         <div class="container">
-            <div class="center-text reveal">
-                <h2 class="section-title">Enterprise logic.<br>Accessible to everyone.</h2>
+            <div class="text-center mb-4 reveal">
+                <h2 style="font-size: 36px; margin-bottom: 16px;">Most businesses don't fail due to lack of sales.</h2>
+                <p style="font-size: 18px; max-width: 600px; margin: 0 auto;">They fail because they don't understand their numbers. Running a business shouldn't feel like juggling 5 disjointed systems.</p>
             </div>
-
-            <div class="features-bento">
-                <div class="bento-glass large reveal gradient-hover">
-                    <h4>LHDN e-Invoicing</h4>
-                    <p>Fully compliant with v4.0. Autonomously handles EPF, SOCSO, and EIS reporting. Stay legal with zero manual data entry.</p>
+            
+            <div class="grid-3">
+                <div class="card problem-card reveal">
+                    <div class="icon-box">✕</div>
+                    <h3>Multiple disconnected tools</h3>
+                    <p>Wasting hours jumping between POS, inventory sheets, and accounting software.</p>
                 </div>
-                
-                <div class="bento-glass reveal delay-1 hover-lift">
-                    <h4>FIFO Inventory</h4>
-                    <p>Exact batch tracking. Know exactly when materials expire and what your true profit margins are.</p>
+                <div class="card problem-card reveal delay-1">
+                    <div class="icon-box">!</div>
+                    <h3>Missing receipts & records</h3>
+                    <p>Manual data entry causes fatal blind spots and constant stress around compliance.</p>
                 </div>
-                
-                <div class="bento-glass reveal delay-2 hover-lift">
-                    <h4>"Loaf of Bread" Logic</h4>
-                    <p>Granular costing to the decimal. Track raw ingredient fluctuations instantly.</p>
-                </div>
-
-                <div class="bento-glass wide reveal delay-3 glow-hover">
-                    <div class="whatsapp-icon"></div>
-                    <h4>WhatsApp Integrated</h4>
-                    <p>Staff can log expenses or check vital stock levels via simple text messages in English, BM, or Hindi.</p>
+                <div class="card problem-card reveal delay-2">
+                    <div class="icon-box">?</div>
+                    <h3>No clear view of cash flow</h3>
+                    <p>It's slow. It's risky. It doesn't scale. You're flying blind.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- THE SOLUTION -->
+    <section class="section" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <div class="text-center mb-4 reveal">
+                <h2 style="font-size: 36px;">debbit replaces everything.</h2>
+                <p>One platform to run your entire operation in real time.</p>
+            </div>
+
+            <div class="grid-2 solution-row reveal">
+                <div>
+                    <h3 style="font-size: 28px; margin-bottom: 16px;">Sell products instantly.</h3>
+                    <p>A lightning-fast Point of Sale designed for the real world. Offline-first architecture means you never drop a transaction, even if the internet goes down. When it returns, it syncs flawlessly.</p>
+                </div>
+                <div class="img-wrap"><img src="images/ui2.jpg" alt="POS UI Mockup" class="solution-img-box"></div>
+            </div>
+
+            <div class="grid-2 solution-row reveal">
+                <div class="img-wrap"><img src="images/ui1.jpg" alt="Inventory UI Mockup" class="solution-img-box"></div>
+                <div>
+                    <h3 style="font-size: 28px; margin-bottom: 16px;">Track exact inventory usage.</h3>
+                    <p>Exact "First-In, First-Out" batch tracking. debbit knows precisely which batch of materials you used, monitoring expiration dates and plotting your true profit margins down to a single loaf of bread.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI CFO -->
+    <section class="section ai-cfo-section">
+        <div class="container text-center reveal">
+            <h3 style="color: var(--brand-accent); letter-spacing: 2px; text-transform: uppercase; font-size: 14px; margin-bottom: 16px;">AI CFO Included</h3>
+            <h2 style="font-size: 40px; margin-bottom: 16px;">Your business, explained in plain English.</h2>
+            <p style="max-width: 600px; margin: 0 auto 40px;">debbit doesn’t just store data. It understands it. No accountant required. No manual analysis needed.</p>
+            
+            <div class="chat-ui reveal delay-1">
+                <div style="text-align: left;">
+                    <div class="chat-bubble">📊 "Your overall profit margin dropped 12% this week."</div>
+                    <div class="chat-bubble">⚠️ "Supplier material costs for Coffee Beans increased by RM4.50. Consider adjusting retail pricing by +RM0.50 to clear margin minimums."</div>
+                    <div class="chat-bubble" style="border-left-color: var(--brand-primary)">✅ "LHDN e-Invoicing reconciliation complete. You are compliant for the month."</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section">
+        <div class="container text-center">
+            <h2 style="font-size: 36px; margin-bottom: 60px;">How it works</h2>
+            
+            <div class="grid-3" style="position: relative;">
+                <!-- Decorative background line -->
+                <div style="position: absolute; top: 24px; left: 10%; right: 10%; height: 2px; background: rgba(157, 78, 221, 0.2); z-index: 1;"></div>
+                
+                <div class="step-item reveal">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Capture Everything</h3>
+                    <p>Sales, expenses, and inventory adjustments are automatically recorded at the counter or via WhatsApp.</p>
+                </div>
+                <div class="step-item reveal delay-1">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">AI Processes Data</h3>
+                    <p>Every transaction is categorized, analyzed, batched, and tracked without human input.</p>
+                </div>
+                <div class="step-item reveal delay-2">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Clarity & Control</h3>
+                    <p>Real-time insights, financial reports, and LHDN compliance are generated and done for you.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BEFORE VS AFTER -->
+    <section class="section">
+        <div class="container">
+            <div class="split-screen reveal">
+                <div class="split-side split-before">
+                    <h3 style="color: #ff3366">Before debbit</h3>
+                    <ul class="split-ul">
+                        <li>Chaotic Excel sheets</li>
+                        <li>Manual bookkeeping late at night</li>
+                        <li>Unclear true profit margins</li>
+                        <li>Constant compliance stress</li>
+                    </ul>
+                </div>
+                <div class="split-side split-after">
+                    <h3 style="color: var(--brand-primary)">After debbit</h3>
+                    <ul class="split-ul">
+                        <li>Real-time financial clarity</li>
+                        <li>Automated, synced operations</li>
+                        <li>Down-to-the-penny accurate margins</li>
+                        <li>Total peace of mind</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section" style="padding-bottom: 160px; text-align: center;">
+        <div class="container reveal">
+            <h2 style="font-size: 48px; margin-bottom: 32px;">Stop guessing. Start running your business with clarity.</h2>
+            <div class="nav-buttons" style="justify-content: center;">
+                <a href="demo.html" class="btn btn-primary" style="padding: 16px 32px; font-size: 18px;">Book a Demo</a>
+                <a href="#" class="btn btn-secondary" style="padding: 16px 32px; font-size: 18px;">Join Waitlist</a>
+            </div>
+            <p style="margin-top: 40px; font-weight: bold; color: var(--brand-accent);">debbit is not accounting software. It's the operating system for your business.</p>
         </div>
     </section>
 
     <footer class="footer">
-        <div class="container footer-content">
-            <div class="logo">
-                <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="100" height="34">
-                    <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
-                    <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
-                    <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
-                </svg>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="100" height="34" class="mb-1">
+                        <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
+                        <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
+                        <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
+                    </svg>
+                    <p style="font-size: 14px;">The definitive OS for SMEs in Southeast Asia.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="features.html">Features</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="industries.html">Industries</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">LHDN e-Invoicing</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
             </div>
-            <p>&copy; 2026 debbit. All rights reserved.</p>
+            <div class="footer-bottom">
+                &copy; 2026 debbit SME OS. All rights reserved.
+            </div>
         </div>
     </footer>
 
