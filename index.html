@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>debbit | The Business OS</title>
+    <meta name="description" content="Subscribe for early access. debbit is a spectacular next-gen Business Operating System for SMEs.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Ambient Background Effects -->
+    <div class="ambient-bg">
+        <div class="orb orb-pink"></div>
+        <div class="orb orb-purple"></div>
+        <div class="noise-overlay"></div>
+    </div>
+
+    <nav class="navbar reveal">
+        <div class="container nav-container">
+            <div class="logo">
+                <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="140" height="48">
+                    <!-- Changed text to white for dark mode -->
+                    <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
+                    <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
+                    <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
+                </svg>
+            </div>
+            <div class="nav-links">
+                <a href="#desktop">Desktop</a>
+                <a href="#cloud">Cloud</a>
+                <a href="#features">Tech</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container hero-container">
+            <div class="badge reveal coming-soon-badge">
+                <span class="badge-dot pulse-fast"></span>
+                <span class="coming-text">COMING SOON</span>
+                <span class="launch-text">KL & Jakarta Launch</span>
+            </div>
+            <h1 class="hero-title reveal delay-1">
+                The business OS.<br>
+                <span class="gradient-text">Spectacularly</span> smart.
+            </h1>
+            <p class="hero-subtitle reveal delay-2">
+                Replace fragmented tools and archaic spreadsheets. debbit gives your SME the power of enterprise AI—offline-first POS, true FIFO inventory, and automated compliance—in one impossibly sleek ecosystem.
+            </p>
+            
+            <div class="subscription-box reveal delay-3">
+                <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                    <input type="email" placeholder="Enter your email to get early access..." required class="email-input">
+                    <button type="submit" class="btn btn-glow">Join Waitlist</button>
+                </form>
+                <p class="sub-text">Spot limited for 2026 launch. Secure early access now.</p>
+            </div>
+            
+            <!-- Sleek Glass Mockup Representation -->
+            <div class="hero-glass-mockup reveal delay-4">
+                <div class="mockup-header">
+                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                </div>
+                <div class="glass-content">
+                    <div class="glass-sidebar">
+                        <div class="side-item active"></div>
+                        <div class="side-item"></div>
+                        <div class="side-item"></div>
+                    </div>
+                    <div class="glass-main">
+                        <div class="chart-container">
+                            <div class="chart-bar pink" style="height: 40%"></div>
+                            <div class="chart-bar purple" style="height: 70%"></div>
+                            <div class="chart-bar pink" style="height: 55%"></div>
+                            <div class="chart-bar white" style="height: 90%"></div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-pill"></div>
+                            <div class="data-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="section" id="desktop">
+        <div class="container grid-container">
+            <div class="text-content reveal">
+                <h3 class="gradient-badge">Offline-First</h3>
+                <h2 class="section-title">Never drop<br>a transaction.</h2>
+                <p class="section-description">
+                    debbit Desktop is a high-octane POS system built natively. It processes sales instantly, entirely independent of internet drops. When the connection returns, it syncs flawlessly.
+                </p>
+            </div>
+            <div class="visual-content reveal delay-2">
+                <div class="glass-card dramatic-tilt">
+                    <div class="neon-ring">
+                        <span>POS</span>
+                    </div>
+                    <div class="pulse-line"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="cloud">
+        <div class="container grid-container reverse">
+            <div class="text-content reveal">
+                <h3 class="gradient-badge">AI Cloud</h3>
+                <h2 class="section-title">Your financial<br>command center.</h2>
+                <p class="section-description">
+                    Access ultimate oversight from any device. The cloud dashboard autonomously analyzes business health, tracks vital metrics, and flags anomalies like missing receipts—keeping you legal without lifting a finger.
+                </p>
+            </div>
+            <div class="visual-content reveal delay-2">
+                <div class="glass-card bento-mini">
+                    <div class="dash-item tall"></div>
+                    <div class="dash-item wide"></div>
+                    <div class="dash-item glow"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section feature-section" id="features">
+        <div class="container">
+            <div class="center-text reveal">
+                <h2 class="section-title">Enterprise logic.<br>Accessible to everyone.</h2>
+            </div>
+
+            <div class="features-bento">
+                <div class="bento-glass large reveal gradient-hover">
+                    <h4>LHDN e-Invoicing</h4>
+                    <p>Fully compliant with v4.0. Autonomously handles EPF, SOCSO, and EIS reporting. Stay legal with zero manual data entry.</p>
+                </div>
+                
+                <div class="bento-glass reveal delay-1 hover-lift">
+                    <h4>FIFO Inventory</h4>
+                    <p>Exact batch tracking. Know exactly when materials expire and what your true profit margins are.</p>
+                </div>
+                
+                <div class="bento-glass reveal delay-2 hover-lift">
+                    <h4>"Loaf of Bread" Logic</h4>
+                    <p>Granular costing to the decimal. Track raw ingredient fluctuations instantly.</p>
+                </div>
+
+                <div class="bento-glass wide reveal delay-3 glow-hover">
+                    <div class="whatsapp-icon"></div>
+                    <h4>WhatsApp Integrated</h4>
+                    <p>Staff can log expenses or check vital stock levels via simple text messages in English, BM, or Hindi.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="logo">
+                <svg viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg" width="100" height="34">
+                    <text x="10" y="85" font-family="'Outfit', sans-serif" font-weight="800" font-size="90" fill="#FFFFFF" letter-spacing="-4">debbit</text>
+                    <rect x="154" y="52" width="34" height="8" rx="2" fill="#ED9CB1" />
+                    <rect x="154" y="68" width="34" height="8" rx="2" fill="#ED9CB1" />
+                </svg>
+            </div>
+            <p>&copy; 2026 debbit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="animations.js"></script>
+</body>
+</html>
