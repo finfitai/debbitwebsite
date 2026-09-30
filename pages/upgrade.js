@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import Sidebar from '../components/Sidebar'
-import { useAuth } from '@clerk/nextjs'
+import { useAuth } from '../lib/clerk'
 import { useRouter } from 'next/router'
 import { useClerkSupabaseClient } from '../lib/supabase'
 import { EqualsMark } from '../components/ui'

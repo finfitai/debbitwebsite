@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import { useRouter } from 'next/router'
-import { SignIn, useAuth, useUser } from '@clerk/nextjs'
-import { clerkEnabled, clerkOrFallbackMessage } from '../lib/clerk'
+import { SignIn } from '@clerk/nextjs'
+import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../lib/clerk'
 import { clerkAppearance } from '../components/clerkAppearance'
 import { EqualsMark } from '../components/ui'
 

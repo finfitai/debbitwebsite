@@ -26,16 +26,28 @@ function ClerkFoucFix() {
 
 export default function App({ Component, pageProps }) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  const body = (
+    <>
+      <ClerkFoucFix />
+      <div className={`${poppins.variable} ${inter.variable}`}>
+        <Component {...pageProps} />
+      </div>
+    </>
+  )
+
+  // @clerk/clerk-react throws synchronously when publishableKey is missing —
+  // during `next build`'s static-page prerendering this isn't a runtime UI
+  // concern, it fails the whole build (see lib/clerk.js for the matching
+  // useAuth/useUser fallback pages rely on to stay renderable either way).
+  if (!publishableKey) return body
+
   return (
     <ClerkProvider
       publishableKey={publishableKey}
       afterSignInUrl="/dashboard"
       afterSignUpUrl="/register"
     >
-      <ClerkFoucFix />
-      <div className={`${poppins.variable} ${inter.variable}`}>
-        <Component {...pageProps} />
-      </div>
+      {body}
     </ClerkProvider>
   )
 }
