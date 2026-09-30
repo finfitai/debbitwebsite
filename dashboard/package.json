@@ -1,0 +1,21 @@
+{
+  "name": "@debbit/dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.31.9",
+    "@stripe/stripe-js": "^9.10.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "next": "15.5.25",
+    "nodemailer": "^9.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "stripe": "^22.3.2",
+    "svix": "^2.2.0"
+  }
+}

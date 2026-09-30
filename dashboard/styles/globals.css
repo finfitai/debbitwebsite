@@ -1,0 +1,52 @@
+/* Poppins/Inter come from next/font/google in pages/_app.js (self-hosted,
+   same-origin — see that file's comment for why, not a runtime @import here).
+   =============================================================================
+   debbit brand tokens — extracted from Debbit_Brand_Book.pdf v1.0 (June 2026).
+   Primary values come straight from the master logo file; usage ratio is
+   60% Paper White/Ink, 30% Purple, 10% pink (never pink for body text, never
+   below 18pt, never pink-on-purple). Green/Coral are FUNCTIONAL ONLY — never
+   for chrome or marketing surfaces, only positive/warning states.
+   ============================================================================= */
+:root {
+  --debbit-purple: #321148;   /* primary — wordmark, headlines, dark chrome */
+  --royal-violet: #5B2D82;    /* secondary purple — gradients, hover, charts */
+  --balance-pink: #E08BB0;    /* signature accent — the "=" mark, CTAs, callouts. 10% max. */
+  --lilac-mist: #C9B8D9;      /* soft fills, dividers, muted text on dark */
+  --midnight-ink: #1C0A2E;    /* darkest tone — dark-mode chrome, footers */
+  --paper-white: #FAF9FB;     /* light backgrounds — purple-tinted, never pure #fff */
+  --profit-green: #2FBF8F;    /* functional only — positive numbers, success */
+  --alert-coral: #F4756B;     /* functional only — warnings, bad debt, expiry */
+  --neutral-slate: #6E6478;   /* body text on light backgrounds, captions */
+
+  --hero-gradient: linear-gradient(135deg, var(--debbit-purple) 0%, var(--royal-violet) 55%, var(--balance-pink) 100%);
+
+  --font-display: var(--font-poppins), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* App chrome tokens (dark surface, per the brand book's "Reversed — white on
+     Midnight Ink" usage) — the product itself is a dark, data-dense app. */
+  --bg: var(--midnight-ink);
+  --panel: var(--debbit-purple);
+  --panel-border: rgba(201, 184, 217, 0.16); /* lilac mist, low alpha */
+  --text: var(--paper-white);
+  --text-muted: var(--lilac-mist);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Numbers are heroes — tabular figures everywhere money/counts render. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
