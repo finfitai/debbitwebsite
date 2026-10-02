@@ -58,6 +58,20 @@ export default function Sidebar() {
         })}
       </nav>
       <div style={{ marginTop: 'auto' }}>
+        {isSignedIn ? (
+          <div style={{ padding: '0 12px 12px' }}>
+            <a
+              href='/downloads/debbit-os-setup-windows.exe'
+              style={{
+                display: 'block', width: '100%', padding: '9px 14px', borderRadius: 8, textAlign: 'left',
+                background: 'var(--balance-pink)', color: 'var(--debbit-purple)', fontWeight: 600,
+                fontSize: 13.5, fontFamily: 'var(--font-body)', textDecoration: 'none', boxSizing: 'border-box',
+              }}
+            >
+              Download debbit OS
+            </a>
+          </div>
+        ) : null}
         {clerkEnabled && isSignedIn ? (
           <div style={{ padding: '0 12px 12px' }}>
             <button

@@ -220,7 +220,6 @@ export default function OnboardingPage() {
       const { data: biz } = await clerkSupabase.from('businesses').select('trial_ends_at').eq('id', businessId).maybeSingle()
       if (biz?.trial_ends_at) setTrialEndsAt(biz.trial_ends_at)
       setDone(true)
-      setTimeout(() => router.replace('/dashboard'), 1600)
     } catch (error) {
       setMessage(error.message)
     } finally {
@@ -303,7 +302,7 @@ export default function OnboardingPage() {
                       You're all set
                     </div>
                     <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(47,191,143,0.12)', border: '1px solid rgba(47,191,143,0.35)', fontSize: 13, color: 'var(--paper-white)' }}>
-                      {message}
+                      Your business and desktop login are ready.
                       {trialEndsAt ? (
                         <div style={{ marginTop: 5, color: 'var(--text-muted)' }}>
                           Trial ends {new Date(trialEndsAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}. You can add a card any time from Upgrade.
@@ -312,6 +311,10 @@ export default function OnboardingPage() {
                       <div style={{ marginTop: 10, color: 'var(--text-muted)' }}>
                         Install debbit OS and sign in with {user?.primaryEmailAddress?.emailAddress} and the desktop password you just set.
                       </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
+                      <a href='/downloads/debbit-os-setup-windows.exe' style={buttonLink}>Download debbit OS for Windows</a>
+                      <button style={secondaryButton} onClick={() => router.replace('/dashboard')}>Skip to dashboard</button>
                     </div>
                   </>
                 ) : isInvite ? (
@@ -411,3 +414,4 @@ const button = {
   border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 13.5, fontFamily: 'var(--font-body)',
 }
 const secondaryButton = { ...button, background: 'transparent', color: 'var(--paper-white)', border: '1px solid var(--panel-border)' }
+const buttonLink = { ...button, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }

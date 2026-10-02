@@ -6,6 +6,11 @@ module.exports = {
   async rewrites() {
     return [
       { source: '/', destination: '/index.html' },
+      // Proxies the Windows installer from Vercel Blob storage so the
+      // download URL (and the save-as filename, which browsers take from
+      // the last path segment when there's no Content-Disposition override)
+      // stays on debbit.org instead of exposing the blob storage domain.
+      { source: '/downloads/debbit-os-setup-windows.exe', destination: 'https://iegnplnlwt8lufvf.public.blob.vercel-storage.com/debbit-os-setup-windows.exe' },
     ]
   },
 
