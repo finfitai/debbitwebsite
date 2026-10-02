@@ -44,6 +44,7 @@ function getDraftDefaults() {
     businessName: '',
     legalName: '',
     registrationNo: '',
+    taxId: '',
     phone: '',
     country: firstCountry.code,
     currency: firstCountry.currency,
@@ -90,6 +91,7 @@ export default function OnboardingPage() {
     () => countryOption(form.country) || PINNED_COUNTRIES[0],
     [form.country]
   )
+  const selectedCountryConfig = useMemo(() => getCountryConfig(form.country), [form.country])
   const selectedBusinessType = useMemo(
     () => BUSINESS_TYPE_OPTIONS.find(item => item.value === form.businessType) || BUSINESS_TYPE_OPTIONS[0],
     [form.businessType]
@@ -193,6 +195,7 @@ export default function OnboardingPage() {
         p_business_name: form.businessName.trim(),
         p_legal_name: form.legalName.trim() || null,
         p_registration_no: form.registrationNo.trim() || null,
+        p_tax_id: form.taxId.trim() || null,
         p_phone: form.phone.trim() || null,
         p_country: form.country,
         p_currency: form.currency,
@@ -362,6 +365,27 @@ export default function OnboardingPage() {
                         <option key={opt.code} value={opt.code}>{opt.flag} {opt.name}</option>
                       ))}
                     </select>
+
+                    <div className="font-display" style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: 'var(--paper-white)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Tax regime</div>
+                    <select
+                      value={form.taxRegime}
+                      onChange={e => updateField('taxRegime', e.target.value)}
+                      style={{ ...input, marginBottom: 14, cursor: 'pointer' }}
+                    >
+                      {(selectedCountryConfig?.regimes || []).map(r => (
+                        <option key={r.value} value={r.value}>{r.label}</option>
+                      ))}
+                    </select>
+                    {selectedCountryConfig?.regimes?.length > 1 ? (
+                      <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: -8, marginBottom: 18 }}>
+                        This is your default rate for new invoices — you can still set a different rate per item later.
+                      </div>
+                    ) : null}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                      <input style={input} type='text' placeholder={`${selectedCountryConfig?.reg_label || 'Registration number'} (optional)`} value={form.registrationNo} onChange={e => updateField('registrationNo', e.target.value)} />
+                      <input style={input} type='text' placeholder={`${selectedCountryConfig?.tax_label || 'Tax ID'} (optional)`} value={form.taxId} onChange={e => updateField('taxId', e.target.value)} />
+                    </div>
 
                     <input style={input} type='text' placeholder='Owner full name' value={form.fullName} onChange={e => updateField('fullName', e.target.value)} />
                     <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business name' value={form.businessName} onChange={e => updateField('businessName', e.target.value)} />
