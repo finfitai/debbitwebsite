@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import Sidebar from '../components/Sidebar'
-import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../lib/clerk'
+import Sidebar from '../../components/Sidebar'
+import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../../lib/clerk'
 import { SignUp } from '@clerk/nextjs'
-import { acceptTenantInvite, bootstrapOwnerRegistration, getInviteByToken, hasSupabaseConfig, supabase, useClerkSupabaseClient } from '../lib/supabase'
-import { clerkAppearance } from '../components/clerkAppearance'
-import { EqualsMark } from '../components/ui'
+import { acceptTenantInvite, bootstrapOwnerRegistration, getInviteByToken, hasSupabaseConfig, supabase, useClerkSupabaseClient } from '../../lib/supabase'
+import { clerkAppearance } from '../../components/clerkAppearance'
+import { EqualsMark } from '../../components/ui'
 
 const card = { background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 14, padding: 26 }
 
@@ -62,7 +62,7 @@ const WEBSITE_INDUSTRY_TO_BUSINESS_TYPE = {
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { isLoaded, isSignedIn } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
   const { user } = useUser()
   const clerkSupabase = useClerkSupabaseClient()
   const [form, setForm] = useState(getDraftDefaults)
@@ -70,6 +70,15 @@ export default function RegisterPage() {
   const [invite, setInvite] = useState(null)
   const [busy, setBusy] = useState(false)
   const [trialEndsAt, setTrialEndsAt] = useState(null)
+  const [done, setDone] = useState(false)
+  // Desktop password, collected in the SAME form/submit as the business
+  // details below — not a separate step with a skip button. Without a
+  // staff_accounts login, there is no way for the desktop app to ever
+  // discover this business: it only knows how to sign in via email+password
+  // (see ipc/staffAccounts.js's app:auth:password:sign_in), and Clerk
+  // sign-up alone never creates one. A signup that completed without this
+  // would be a trial the owner can never actually open the app with.
+  const [desktopPw, setDesktopPw] = useState({ pw: '', confirm: '' })
 
   const selectedCountry = useMemo(
     () => COUNTRY_OPTIONS.find(item => item.code === form.country) || COUNTRY_OPTIONS[0],
@@ -119,7 +128,17 @@ export default function RegisterPage() {
     setForm(current => ({ ...current, [key]: value }))
   }
 
-  async function completeBootstrap() {
+  // One submit does everything a signup needs to actually be usable:
+  // creates the business + trial, THEN creates the staff_accounts MASTER
+  // login the desktop app signs in with (see owner-desktop-login's header
+  // comment — Clerk sign-up alone never creates one). No partial state is
+  // exposed in the UI: either both succeed, or the form stays up with an
+  // error and nothing to skip past. bootstrap_owner_registration and
+  // owner-desktop-login are both idempotent, so re-submitting after a
+  // failure (e.g. the first call succeeded, the second didn't) safely
+  // finishes whichever part didn't complete rather than erroring or
+  // duplicating anything.
+  async function completeSignup() {
     if (!isSignedIn) {
       setMessage('Sign in with Clerk first, then complete business setup.')
       return
@@ -128,8 +147,11 @@ export default function RegisterPage() {
       setMessage('Supabase is not configured.')
       return
     }
-    setBusy(true)
     setMessage('')
+    if (desktopPw.pw.length < 8) { setMessage('Desktop password must be at least 8 characters'); return }
+    if (desktopPw.pw !== desktopPw.confirm) { setMessage('Desktop passwords do not match'); return }
+
+    setBusy(true)
     try {
       const { data: businessId, error } = await bootstrapOwnerRegistration(clerkSupabase, {
         p_business_name: form.businessName.trim(),
@@ -146,13 +168,29 @@ export default function RegisterPage() {
         setMessage(error.message)
         return
       }
-      // Fetch the trial end date the RPC just set, so the "start your free
-      // trial" flow can show a concrete date rather than just "success".
+
+      const token = await getToken()
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/owner-desktop-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({ business_id: businessId, password: desktopPw.pw }),
+      })
+      const j = await res.json().catch(() => ({}))
+      if (!res.ok || !j.ok) {
+        setMessage(`Your business was created, but the desktop login could not be — ${j.error || `HTTP ${res.status}`}. Submit again to finish setting it up.`)
+        return
+      }
+
+      // Fetch the trial end date the RPC just set, so the success message
+      // can show a concrete date rather than just "success".
       const { data: biz } = await clerkSupabase.from('businesses').select('trial_ends_at').eq('id', businessId).maybeSingle()
       if (biz?.trial_ends_at) setTrialEndsAt(biz.trial_ends_at)
-      setMessage('Your business is set up and your 1-month free trial has started.')
-      setForm(getDraftDefaults())
-      setTimeout(() => router.replace('/dashboard'), 1400)
+      setDone(true)
+      setTimeout(() => router.replace('/dashboard'), 1600)
     } catch (error) {
       setMessage(error.message)
     } finally {
@@ -227,59 +265,85 @@ export default function RegisterPage() {
               </section>
 
               <section style={card}>
-                <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>
-                  {invite?.invite_token ? 'Invite summary' : 'Your business'}
-                </div>
-                <div style={{ display: 'grid', gap: 10, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                  <div><b style={{ color: 'var(--paper-white)' }}>Identity:</b> Clerk session for the owner/admin.</div>
-                  <div><b style={{ color: 'var(--paper-white)' }}>Business tenant:</b> Supabase `businesses` record.</div>
-                  <div><b style={{ color: 'var(--paper-white)' }}>Owner membership:</b> first `business_members` row with `OWNER` role.</div>
-                  <div><b style={{ color: 'var(--paper-white)' }}>Accounting seed:</b> chart of accounts auto-seeded by the existing trigger.</div>
-                  {!invite?.invite_token ? <div><b style={{ color: 'var(--paper-white)' }}>Trial:</b> 1-month full access, starts the moment setup completes.</div> : null}
-                </div>
-                <div style={{ marginTop: 18 }}>
-                  <input style={input} type='text' placeholder='Owner full name' value={form.fullName} onChange={e => updateField('fullName', e.target.value)} />
-                  <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business name' value={form.businessName} onChange={e => updateField('businessName', e.target.value)} />
-                  <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business phone (optional)' value={form.phone} onChange={e => updateField('phone', e.target.value)} />
-                  <select style={{ ...input, marginTop: 10 }} value={form.country} onChange={e => updateField('country', e.target.value)}>
-                    {COUNTRY_OPTIONS.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}
-                  </select>
-                  {!invite?.invite_token ? (
-                    <select style={{ ...input, marginTop: 10 }} value={form.businessType} onChange={e => updateField('businessType', e.target.value)}>
-                      {BUSINESS_TYPE_OPTIONS.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
-                    </select>
-                  ) : null}
-                </div>
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
-                  {isSignedIn ? (
-                    <>
-                      <button style={button} disabled={busy} onClick={() => (invite?.invite_token ? completeInviteAcceptance() : completeBootstrap())}>
-                        {invite?.invite_token ? 'Accept invite' : 'Start free trial'}
-                      </button>
-                      {invite?.invite_token ? (
-                        <button style={secondaryButton} disabled={busy} onClick={() => completeBootstrap()}>Register my own business instead</button>
+                {done ? (
+                  <>
+                    <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>
+                      You're all set
+                    </div>
+                    <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(47,191,143,0.12)', border: '1px solid rgba(47,191,143,0.35)', fontSize: 13, color: 'var(--paper-white)' }}>
+                      {message}
+                      {trialEndsAt ? (
+                        <div style={{ marginTop: 5, color: 'var(--text-muted)' }}>
+                          Trial ends {new Date(trialEndsAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}. You can add a card any time from Upgrade.
+                        </div>
                       ) : null}
-                    </>
-                  ) : (
-                    <Link href='/login' style={buttonLink}>Sign in with Clerk</Link>
-                  )}
-                </div>
-                {message ? (
-                  <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 10, background: 'rgba(47,191,143,0.12)', border: '1px solid rgba(47,191,143,0.35)', fontSize: 13, color: 'var(--paper-white)' }}>
-                    {message}
-                    {trialEndsAt ? (
-                      <div style={{ marginTop: 5, color: 'var(--text-muted)' }}>
-                        Trial ends {new Date(trialEndsAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}. You can add a card any time from Upgrade.
+                      <div style={{ marginTop: 10, color: 'var(--text-muted)' }}>
+                        Install debbit OS and sign in with {user?.primaryEmailAddress?.emailAddress} and the desktop password you just set.
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>
+                      {invite?.invite_token ? 'Invite summary' : 'Your business'}
+                    </div>
+                    <div style={{ display: 'grid', gap: 10, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                      <div><b style={{ color: 'var(--paper-white)' }}>Identity:</b> Clerk session for the owner/admin.</div>
+                      <div><b style={{ color: 'var(--paper-white)' }}>Business tenant:</b> Supabase `businesses` record.</div>
+                      <div><b style={{ color: 'var(--paper-white)' }}>Owner membership:</b> first `business_members` row with `OWNER` role.</div>
+                      <div><b style={{ color: 'var(--paper-white)' }}>Accounting seed:</b> chart of accounts auto-seeded by the existing trigger.</div>
+                      {!invite?.invite_token ? <div><b style={{ color: 'var(--paper-white)' }}>Trial:</b> 1-month full access, starts the moment setup completes.</div> : null}
+                      {!invite?.invite_token ? <div><b style={{ color: 'var(--paper-white)' }}>Desktop login:</b> the password below — debbit OS signs in with it, not Clerk.</div> : null}
+                    </div>
+                    <div style={{ marginTop: 18 }}>
+                      <input style={input} type='text' placeholder='Owner full name' value={form.fullName} onChange={e => updateField('fullName', e.target.value)} />
+                      <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business name' value={form.businessName} onChange={e => updateField('businessName', e.target.value)} />
+                      <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business phone (optional)' value={form.phone} onChange={e => updateField('phone', e.target.value)} />
+                      <select style={{ ...input, marginTop: 10 }} value={form.country} onChange={e => updateField('country', e.target.value)}>
+                        {COUNTRY_OPTIONS.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}
+                      </select>
+                      {!invite?.invite_token ? (
+                        <>
+                          <select style={{ ...input, marginTop: 10 }} value={form.businessType} onChange={e => updateField('businessType', e.target.value)}>
+                            {BUSINESS_TYPE_OPTIONS.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
+                          </select>
+                          <input style={{ ...input, marginTop: 10 }} type='password' placeholder='Desktop password (min 8 characters)' value={desktopPw.pw}
+                            onChange={e => setDesktopPw(current => ({ ...current, pw: e.target.value }))} />
+                          <input style={{ ...input, marginTop: 10 }} type='password' placeholder='Confirm desktop password' value={desktopPw.confirm}
+                            onChange={e => setDesktopPw(current => ({ ...current, confirm: e.target.value }))}
+                            onKeyDown={e => { if (e.key === 'Enter') completeSignup() }} />
+                        </>
+                      ) : null}
+                    </div>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
+                      {isSignedIn ? (
+                        <>
+                          <button style={button} disabled={busy} onClick={() => (invite?.invite_token ? completeInviteAcceptance() : completeSignup())}>
+                            {busy ? 'Setting up…' : invite?.invite_token ? 'Accept invite' : 'Start free trial'}
+                          </button>
+                          {invite?.invite_token ? (
+                            <button style={secondaryButton} disabled={busy} onClick={() => completeSignup()}>Register my own business instead</button>
+                          ) : null}
+                        </>
+                      ) : (
+                        <Link href='/login' style={buttonLink}>Sign in with Clerk</Link>
+                      )}
+                    </div>
+                    {message ? (
+                      <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 10, background: 'rgba(244,117,107,0.1)', border: '1px solid rgba(244,117,107,0.3)', fontSize: 13, color: '#f8a29b' }}>
+                        {message}
                       </div>
                     ) : null}
+                  </>
+                )}
+                {!done ? (
+                  <div style={{ marginTop: 22, padding: 16, borderRadius: 12, border: '1px solid var(--panel-border)', background: 'var(--midnight-ink)' }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--balance-pink)', marginBottom: 8 }}>Localization preview</div>
+                    <div className="font-display tabular-nums" style={{ fontSize: 15, fontWeight: 600, color: 'var(--paper-white)' }}>{selectedCountry.label}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{form.currency} · {form.taxRegime}</div>
                   </div>
                 ) : null}
-                <div style={{ marginTop: 22, padding: 16, borderRadius: 12, border: '1px solid var(--panel-border)', background: 'var(--midnight-ink)' }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--balance-pink)', marginBottom: 8 }}>Localization preview</div>
-                  <div className="font-display tabular-nums" style={{ fontSize: 15, fontWeight: 600, color: 'var(--paper-white)' }}>{selectedCountry.label}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{form.currency} · {form.taxRegime}</div>
-                </div>
-                {invite ? (
+                {invite && !done ? (
                   <div style={{ marginTop: 12, padding: 14, border: '1px solid var(--panel-border)', borderRadius: 12, background: 'var(--midnight-ink)', fontSize: 12, color: 'var(--text-muted)' }}>
                     Invite detected for <b style={{ color: 'var(--paper-white)' }}>{invite.business_name || invite.business_id}</b> as <b style={{ color: 'var(--paper-white)' }}>{invite.role}</b>.
                   </div>

@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import Sidebar from '../components/Sidebar'
-import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../lib/clerk'
-import { clerkAppearance } from '../components/clerkAppearance'
-import { EqualsMark } from '../components/ui'
+import Sidebar from '../../components/Sidebar'
+import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../../lib/clerk'
+import { clerkAppearance } from '../../components/clerkAppearance'
+import { EqualsMark } from '../../components/ui'
 import { SignIn } from '@clerk/nextjs'
 
 const card = { background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 14, padding: 26 }
