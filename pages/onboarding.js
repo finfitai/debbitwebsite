@@ -366,23 +366,7 @@ export default function OnboardingPage() {
                       ))}
                     </select>
 
-                    <div className="font-display" style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: 'var(--paper-white)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Tax regime</div>
-                    <select
-                      value={form.taxRegime}
-                      onChange={e => updateField('taxRegime', e.target.value)}
-                      style={{ ...input, marginBottom: 14, cursor: 'pointer' }}
-                    >
-                      {(selectedCountryConfig?.regimes || []).map(r => (
-                        <option key={r.value} value={r.value}>{r.label}</option>
-                      ))}
-                    </select>
-                    {selectedCountryConfig?.regimes?.length > 1 ? (
-                      <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: -8, marginBottom: 18 }}>
-                        This is your default rate for new invoices — you can still set a different rate per item later.
-                      </div>
-                    ) : null}
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10, marginBottom: 10 }}>
                       <input style={input} type='text' placeholder={`${selectedCountryConfig?.reg_label || 'Registration number'} (optional)`} value={form.registrationNo} onChange={e => updateField('registrationNo', e.target.value)} />
                       <input style={input} type='text' placeholder={`${selectedCountryConfig?.tax_label || 'Tax ID'} (optional)`} value={form.taxId} onChange={e => updateField('taxId', e.target.value)} />
                     </div>
