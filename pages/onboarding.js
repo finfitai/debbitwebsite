@@ -5,16 +5,24 @@ import { acceptTenantInvite, bootstrapOwnerRegistration, getInviteByToken, hasSu
 import { EqualsMark } from '../components/ui'
 import { BUSINESS_TYPE_ICONS, CheckBadgeIcon, LockKeyIcon, RocketIcon } from '../components/icons'
 import { BrandLoader } from '../components/Protected'
+import { ALL_195_COUNTRIES, getCountryConfig } from '../lib/countries'
 
 const card = { background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 14, padding: 26 }
 
-const COUNTRY_OPTIONS = [
-  { code: 'MY', currency: 'MYR', tax: 'MY_SST_6', label: 'Malaysia', flag: '🇲🇾' },
-  { code: 'IN', currency: 'INR', tax: 'IN_GST_18', label: 'India', flag: '🇮🇳' },
-  { code: 'SA', currency: 'SAR', tax: 'KSA_VAT_15', label: 'Saudi Arabia', flag: '🇸🇦' },
-  { code: 'AE', currency: 'AED', tax: 'UAE_VAT_5', label: 'UAE', flag: '🇦🇪' },
-  { code: 'ID', currency: 'IDR', tax: 'ID_PPN_11', label: 'Indonesia', flag: '🇮🇩' },
-]
+// The five markets debbit OS has real e-invoicing/tax-regime support for —
+// shown as quick-pick pills. Every other country (lib/countries.js's full
+// 195) is reachable from the dropdown right below them, each defaulting to
+// a standard tax regime the backend already accepts (see migration 049).
+const PINNED_COUNTRY_CODES = ['MY', 'IN', 'SA', 'AE', 'ID']
+
+function countryOption(code) {
+  const cfg = getCountryConfig(code)
+  if (!cfg) return null
+  return { code: code.toUpperCase(), label: cfg.name, flag: cfg.flag, currency: cfg.currency, tax: cfg.default_regime }
+}
+
+const PINNED_COUNTRIES = PINNED_COUNTRY_CODES.map(countryOption)
+const OTHER_COUNTRIES = ALL_195_COUNTRIES.filter(c => !PINNED_COUNTRY_CODES.includes(c.code))
 
 // Labels/taglines mirror apps/desktop/profiles/*.json exactly (restaurant,
 // wholesale, retail, manufacturing, services) — what you pick here is what
@@ -29,7 +37,7 @@ const BUSINESS_TYPE_OPTIONS = [
 ]
 
 function getDraftDefaults() {
-  const firstCountry = COUNTRY_OPTIONS[0]
+  const firstCountry = PINNED_COUNTRIES[0]
   return {
     fullName: '',
     email: '',
@@ -79,7 +87,7 @@ export default function OnboardingPage() {
   const [desktopPw, setDesktopPw] = useState({ pw: '', confirm: '' })
 
   const selectedCountry = useMemo(
-    () => COUNTRY_OPTIONS.find(item => item.code === form.country) || COUNTRY_OPTIONS[0],
+    () => countryOption(form.country) || PINNED_COUNTRIES[0],
     [form.country]
   )
   const selectedBusinessType = useMemo(
@@ -120,7 +128,7 @@ export default function OnboardingPage() {
     const { country, industry } = router.query
     const countryCode = typeof country === 'string' ? country.toUpperCase() : null
     const businessType = typeof industry === 'string' ? WEBSITE_INDUSTRY_TO_BUSINESS_TYPE[industry.toLowerCase()] : null
-    const matchedCountry = countryCode ? COUNTRY_OPTIONS.find(item => item.code === countryCode) : null
+    const matchedCountry = countryCode ? countryOption(countryCode) : null
     if (!matchedCountry && !businessType) return
     setForm(current => ({
       ...current,
@@ -147,7 +155,7 @@ export default function OnboardingPage() {
   // unless the website-quiz query params set them), creating a business whose country
   // doesn't match its currency/tax regime.
   function selectCountry(code) {
-    const next = COUNTRY_OPTIONS.find(item => item.code === code) || COUNTRY_OPTIONS[0]
+    const next = countryOption(code) || PINNED_COUNTRIES[0]
     setForm(current => ({ ...current, country: next.code, currency: next.currency, taxRegime: next.tax }))
   }
 
@@ -316,10 +324,6 @@ export default function OnboardingPage() {
                 {isInvite ? (
                   <>
                     <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>Invite summary</div>
-                    <div style={{ display: 'grid', gap: 10, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 18 }}>
-                      <div><b style={{ color: 'var(--paper-white)' }}>Identity:</b> Clerk session for the owner/admin.</div>
-                      <div><b style={{ color: 'var(--paper-white)' }}>Membership:</b> a new `business_members` row on the inviting business.</div>
-                    </div>
                     <input style={input} type='text' placeholder='Your full name' value={form.fullName} onChange={e => updateField('fullName', e.target.value)} />
                     <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Phone (optional)' value={form.phone} onChange={e => updateField('phone', e.target.value)} />
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
@@ -327,6 +331,9 @@ export default function OnboardingPage() {
                       <button style={secondaryButton} disabled={busy} onClick={() => setInvite(null)}>Register my own business instead</button>
                     </div>
                     {message ? <MessageBox>{message}</MessageBox> : null}
+                    <div style={{ marginTop: 18, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                      You'll get your own account and join the business right away, with whatever access level they've invited you at.
+                    </div>
                   </>
                 ) : step === 0 ? (
                   <>
@@ -338,11 +345,23 @@ export default function OnboardingPage() {
                     </div>
 
                     <div className="font-display" style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: 'var(--paper-white)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Country</div>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
-                      {COUNTRY_OPTIONS.map(opt => (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                      {PINNED_COUNTRIES.map(opt => (
                         <CountryPill key={opt.code} option={opt} active={form.country === opt.code} onSelect={() => selectCountry(opt.code)} />
                       ))}
                     </div>
+                    <select
+                      value={PINNED_COUNTRY_CODES.includes(form.country) ? '' : form.country}
+                      onChange={e => { if (e.target.value) selectCountry(e.target.value) }}
+                      style={{ ...input, marginBottom: 22, cursor: 'pointer' }}
+                    >
+                      <option value="" disabled>
+                        {PINNED_COUNTRY_CODES.includes(form.country) ? 'Or pick another country…' : `${selectedCountry.flag} ${selectedCountry.label}`}
+                      </option>
+                      {OTHER_COUNTRIES.map(opt => (
+                        <option key={opt.code} value={opt.code}>{opt.flag} {opt.name}</option>
+                      ))}
+                    </select>
 
                     <input style={input} type='text' placeholder='Owner full name' value={form.fullName} onChange={e => updateField('fullName', e.target.value)} />
                     <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business name' value={form.businessName} onChange={e => updateField('businessName', e.target.value)} />
@@ -462,6 +481,9 @@ function CountryPill({ option, active, onSelect }) {
 }
 
 function BusinessPreview({ businessType, country, currency, taxRegime, Icon }) {
+  const countryConfig = getCountryConfig(country.code)
+  const taxRegimeLabel = countryConfig?.regimes?.find(r => r.value === taxRegime)?.label || taxRegime
+
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
@@ -477,19 +499,16 @@ function BusinessPreview({ businessType, country, currency, taxRegime, Icon }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gap: 10, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 18 }}>
-        <div><b style={{ color: 'var(--paper-white)' }}>Identity:</b> Clerk session for the owner/admin.</div>
-        <div><b style={{ color: 'var(--paper-white)' }}>Business tenant:</b> Supabase `businesses` record.</div>
-        <div><b style={{ color: 'var(--paper-white)' }}>Owner membership:</b> first `business_members` row with `OWNER` role.</div>
-        <div><b style={{ color: 'var(--paper-white)' }}>Accounting seed:</b> chart of accounts auto-seeded for {businessType.label.toLowerCase()}.</div>
-      </div>
-
       <div style={{ padding: 16, borderRadius: 12, border: '1px solid var(--panel-border)', background: 'var(--midnight-ink)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--balance-pink)', marginBottom: 8 }}>Localization preview</div>
         <div className="font-display tabular-nums" style={{ fontSize: 15, fontWeight: 600, color: 'var(--paper-white)' }}>
           <span style={{ marginRight: 8 }}>{country.flag}</span>{country.label}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{currency} · {taxRegime}</div>
+        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{currency} · {taxRegimeLabel}</div>
+      </div>
+
+      <div style={{ marginTop: 18, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        You'll be the owner with full access from day one, and your chart of accounts is set up automatically for {businessType.label.toLowerCase()} — nothing to configure yourself.
       </div>
     </div>
   )
