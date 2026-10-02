@@ -30,7 +30,7 @@ const buttonStyle = {
   borderRadius: 9,
   fontSize: 15,
   fontWeight: 600,
-  fontFamily: 'var(--font-body)',
+  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
   cursor: 'pointer',
   marginTop: 24,
   width: '100%',

@@ -14,11 +14,11 @@ export const clerkAppearance = {
     colorDanger: '#F4756B',
     colorSuccess: '#2FBF8F',
     borderRadius: '10px',
-    fontFamily: 'var(--font-inter), Inter, sans-serif',
+    fontFamily: 'Inter, sans-serif',
   },
   elements: {
     card: { boxShadow: 'none', background: 'transparent' },
-    headerTitle: { fontFamily: 'var(--font-poppins), Poppins, sans-serif', color: '#FAF9FB' },
+    headerTitle: { fontFamily: 'Poppins, sans-serif', color: '#FAF9FB' },
     headerSubtitle: { color: '#C9B8D9' },
     formButtonPrimary: { background: '#E08BB0', color: '#321148', fontWeight: 600, '&:hover': { background: '#e9a3c3' } },
     footerActionLink: { color: '#E08BB0' },

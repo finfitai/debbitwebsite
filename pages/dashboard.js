@@ -311,7 +311,7 @@ export default function CfoDashboard() {
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             {lastRefresh ? <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Refreshed {lastRefresh}</span> : null}
-            <button onClick={load} style={{ padding: '8px 16px', background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 9, color: 'var(--paper-white)', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)' }}>
+            <button onClick={load} style={{ padding: '8px 16px', background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 9, color: 'var(--paper-white)', cursor: 'pointer', fontSize: 13, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }}>
               Refresh
             </button>
           </div>

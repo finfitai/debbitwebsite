@@ -60,7 +60,7 @@ export default function Sidebar() {
             style={{
               display: 'block', width: '100%', padding: '9px 14px', borderRadius: 8, textAlign: 'left',
               background: 'var(--balance-pink)', color: 'var(--debbit-purple)', fontWeight: 600,
-              fontSize: 13.5, fontFamily: 'var(--font-body)', textDecoration: 'none', boxSizing: 'border-box',
+              fontSize: 13.5, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', textDecoration: 'none', boxSizing: 'border-box',
             }}
           >
             Download debbit OS
@@ -72,7 +72,7 @@ export default function Sidebar() {
             style={{
               width: '100%', padding: '9px 14px', borderRadius: 8, textAlign: 'left',
               background: 'transparent', border: '1px solid var(--panel-border)', color: 'var(--text-muted)',
-              fontSize: 13.5, fontFamily: 'var(--font-body)', cursor: 'pointer',
+              fontSize: 13.5, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', cursor: 'pointer',
             }}
           >
             Sign out

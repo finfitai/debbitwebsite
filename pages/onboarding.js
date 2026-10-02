@@ -433,7 +433,7 @@ function BusinessTypeTile({ option, active, onSelect }) {
         padding: '14px 13px', borderRadius: 12, cursor: 'pointer',
         border: `1.5px solid ${active ? 'var(--balance-pink)' : 'var(--panel-border)'}`,
         background: active ? 'rgba(224,139,176,0.12)' : 'var(--midnight-ink)',
-        color: 'var(--paper-white)', fontFamily: 'var(--font-body)',
+        color: 'var(--paper-white)', fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
         transition: 'border-color .15s, background .15s', boxSizing: 'border-box',
       }}
     >
@@ -452,7 +452,7 @@ function CountryPill({ option, active, onSelect }) {
         display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px', borderRadius: 999, cursor: 'pointer',
         border: `1.5px solid ${active ? 'var(--balance-pink)' : 'var(--panel-border)'}`,
         background: active ? 'rgba(224,139,176,0.12)' : 'var(--midnight-ink)',
-        color: active ? 'var(--paper-white)' : 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: 13,
+        color: active ? 'var(--paper-white)' : 'var(--text-muted)', fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', fontSize: 13,
         fontWeight: active ? 600 : 400,
       }}
     >
@@ -549,11 +549,11 @@ function MessageBox({ children }) {
 const input = {
   width: '100%', padding: '11px 13px', borderRadius: 9, fontSize: 13.5,
   border: '1px solid var(--panel-border)', background: 'var(--midnight-ink)', color: 'var(--paper-white)',
-  fontFamily: 'var(--font-body)',
+  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
 }
 const button = {
   padding: '10px 18px', borderRadius: 9, background: 'var(--balance-pink)', color: 'var(--debbit-purple)',
-  border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 13.5, fontFamily: 'var(--font-body)',
+  border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 13.5, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
 }
 const secondaryButton = { ...button, background: 'transparent', color: 'var(--paper-white)', border: '1px solid var(--panel-border)' }
 const buttonLink = { ...button, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }

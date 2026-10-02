@@ -67,7 +67,7 @@ export default function Dashboard() {
             </span>
             <button
               onClick={fetchShifts}
-              style={{ padding: '8px 16px', background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 9, color: 'var(--paper-white)', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)' }}
+              style={{ padding: '8px 16px', background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 9, color: 'var(--paper-white)', cursor: 'pointer', fontSize: 13, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }}
             >
               Refresh
             </button>
@@ -98,7 +98,7 @@ export default function Dashboard() {
                 color: filter === value ? 'var(--balance-pink)' : 'var(--text-muted)',
                 cursor: 'pointer',
                 fontSize: 13,
-                fontFamily: 'var(--font-body)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
                 fontWeight: filter === value ? 600 : 400,
               }}
             >
@@ -144,9 +144,9 @@ export default function Dashboard() {
                     <td style={td}>{row.employees?.name || row.cashier_id?.slice(0, 8) || 'Unknown'}</td>
                     <td style={{ ...td, fontFamily: 'monospace', fontSize: 12 }}>{row.shift_start ? row.shift_start.slice(11, 16) : '-'}</td>
                     <td style={{ ...td, fontFamily: 'monospace', fontSize: 12 }}>{row.shift_end ? row.shift_end.slice(11, 16) : '-'}</td>
-                    <td style={{ ...td, fontFamily: 'var(--font-body)' }} className="tabular-nums">{fmt(row.declared_amount_sen)}</td>
-                    <td style={{ ...td, fontFamily: 'var(--font-body)' }} className="tabular-nums">{fmt(row.expected_amount_sen)}</td>
-                    <td style={{ ...td, fontFamily: 'var(--font-body)', color: varianceColor(row.variance_sen), fontWeight: 600 }} className="tabular-nums">
+                    <td style={{ ...td, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }} className="tabular-nums">{fmt(row.declared_amount_sen)}</td>
+                    <td style={{ ...td, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }} className="tabular-nums">{fmt(row.expected_amount_sen)}</td>
+                    <td style={{ ...td, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', color: varianceColor(row.variance_sen), fontWeight: 600 }} className="tabular-nums">
                       {row.variance_sen != null ? `${row.variance_sen >= 0 ? '+' : ''}${(row.variance_sen / 100).toFixed(2)}` : '-'}
                     </td>
                     <td style={td}>

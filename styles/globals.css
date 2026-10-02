@@ -20,9 +20,6 @@
 
   --hero-gradient: linear-gradient(135deg, var(--debbit-purple) 0%, var(--royal-violet) 55%, var(--balance-pink) 100%);
 
-  --font-display: var(--font-poppins), -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
-
   /* App chrome tokens (dark surface, per the brand book's "Reversed — white on
      Midnight Ink" usage) — the product itself is a dark, data-dense app. */
   --bg: var(--midnight-ink);
@@ -35,7 +32,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: var(--font-body);
+  /* Literal "Inter"/"Poppins" rather than var(--font-inter)/var(--font-poppins):
+     next/font's @font-face rules are injected globally once the .variable
+     class renders anywhere in the tree, but the CSS custom property itself
+     only inherits to that class's descendants — body/html sit above it, so
+     var(--font-inter) never resolves there. The literal family name isn't
+     DOM-scoped and always works. */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -43,7 +46,7 @@ body {
 }
 
 h1, h2, h3, .font-display {
-  font-family: var(--font-display);
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Numbers are heroes — tabular figures everywhere money/counts render. */

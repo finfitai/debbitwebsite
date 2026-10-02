@@ -73,12 +73,12 @@ export const input = {
   border: '1px solid var(--panel-border)',
   background: 'var(--midnight-ink)',
   color: 'var(--paper-white)',
-  fontFamily: 'var(--font-body)',
+  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
   fontSize: 13.5,
 }
 
 export const miniInput = { ...input, padding: '7px 9px', fontSize: 12 }
-export const primaryButton = { padding: '10px 16px', borderRadius: 9, background: 'var(--balance-pink)', color: 'var(--debbit-purple)', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-body)' }
+export const primaryButton = { padding: '10px 16px', borderRadius: 9, background: 'var(--balance-pink)', color: 'var(--debbit-purple)', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }
 export const secondaryButton = { ...primaryButton, background: 'transparent', border: '1px solid var(--panel-border)', color: 'var(--paper-white)' }
 export const table = { width: '100%', borderCollapse: 'collapse' }
 export const th = { textAlign: 'left', padding: '10px 8px', fontSize: 12, color: 'var(--text-muted)', borderBottom: '1px solid var(--panel-border)' }
