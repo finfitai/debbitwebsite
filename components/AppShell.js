@@ -1,11 +1,10 @@
-import Sidebar from './Sidebar'
+import Protected from './Protected'
 import { EqualsMark } from './ui'
 
 export default function AppShell({ title, subtitle, actions, children, maxWidth = 1180 }) {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)', color: 'var(--paper-white)' }}>
-      <Sidebar />
-      <main style={{ flex: 1, padding: '32px 28px 40px' }}>
+    <Protected>
+      <div style={{ padding: '32px 28px 40px', color: 'var(--paper-white)' }}>
         <div style={{ maxWidth, margin: '0 auto' }}>
           <section style={{ marginBottom: 24, padding: '24px 26px', border: '1px solid var(--panel-border)', borderRadius: 18, background: 'var(--panel)', boxShadow: '0 24px 80px rgba(0,0,0,0.3)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
@@ -22,7 +21,7 @@ export default function AppShell({ title, subtitle, actions, children, maxWidth 
           </section>
           {children}
         </div>
-      </main>
-    </div>
+      </div>
+    </Protected>
   )
 }

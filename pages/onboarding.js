@@ -1,32 +1,31 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
-import Sidebar from '../components/Sidebar'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../lib/clerk'
 import { acceptTenantInvite, bootstrapOwnerRegistration, getInviteByToken, hasSupabaseConfig, supabase, useClerkSupabaseClient } from '../lib/supabase'
 import { EqualsMark } from '../components/ui'
+import { BUSINESS_TYPE_ICONS, CheckBadgeIcon, LockKeyIcon, RocketIcon } from '../components/icons'
+import { BrandLoader } from '../components/Protected'
 
 const card = { background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 14, padding: 26 }
 
 const COUNTRY_OPTIONS = [
-  { code: 'MY', currency: 'MYR', tax: 'MY_SST_6', label: 'Malaysia' },
-  { code: 'IN', currency: 'INR', tax: 'IN_GST_18', label: 'India' },
-  { code: 'SA', currency: 'SAR', tax: 'KSA_VAT_15', label: 'Saudi Arabia' },
-  { code: 'AE', currency: 'AED', tax: 'UAE_VAT_5', label: 'UAE' },
-  { code: 'ID', currency: 'IDR', tax: 'ID_PPN_11', label: 'Indonesia' },
+  { code: 'MY', currency: 'MYR', tax: 'MY_SST_6', label: 'Malaysia', flag: '🇲🇾' },
+  { code: 'IN', currency: 'INR', tax: 'IN_GST_18', label: 'India', flag: '🇮🇳' },
+  { code: 'SA', currency: 'SAR', tax: 'KSA_VAT_15', label: 'Saudi Arabia', flag: '🇸🇦' },
+  { code: 'AE', currency: 'AED', tax: 'UAE_VAT_5', label: 'UAE', flag: '🇦🇪' },
+  { code: 'ID', currency: 'IDR', tax: 'ID_PPN_11', label: 'Indonesia', flag: '🇮🇩' },
 ]
 
-// Matches supabase's business_type enum exactly (001_core_schema.sql). The
-// desktop wizard layers a richer "industry_profile" concept on top of this
-// (Construction/Logistics/etc, driving module visibility) that only exists
-// locally — not synced to the cloud — so isn't reproduced here; every web
-// signup gets this plain business_type and can refine further once they
-// open the desktop app.
+// Labels/taglines mirror apps/desktop/profiles/*.json exactly (restaurant,
+// wholesale, retail, manufacturing, services) — what you pick here is what
+// actually changes in the desktop app's nav and chart of accounts the first
+// time you sign in there (see ipc/staffAccounts.js's bootstrapBusiness).
 const BUSINESS_TYPE_OPTIONS = [
-  { value: 'RETAIL', label: 'Retail / Shop' },
-  { value: 'FOOD_BEVERAGE', label: 'Food & Beverage' },
-  { value: 'WHOLESALE', label: 'Wholesale / Distribution' },
-  { value: 'MANUFACTURING', label: 'Manufacturing' },
-  { value: 'SERVICE', label: 'Service (incl. construction, logistics)' },
+  { value: 'RETAIL', label: 'Retail / Shop', tagline: 'Sell products over the counter' },
+  { value: 'FOOD_BEVERAGE', label: 'Restaurant / Café', tagline: 'Menu items, ingredients, fast orders' },
+  { value: 'WHOLESALE', label: 'Wholesale / Distribution', tagline: 'Bulk sell-in to other businesses, EDI, pick & pack' },
+  { value: 'MANUFACTURING', label: 'Light Manufacturing', tagline: 'Build products from raw materials (BOM)' },
+  { value: 'SERVICE', label: 'Services / Professional', tagline: 'Bill for time and services, no stock' },
 ]
 
 function getDraftDefaults() {
@@ -57,7 +56,7 @@ const WEBSITE_INDUSTRY_TO_BUSINESS_TYPE = {
   manufacturing: 'MANUFACTURING',
 }
 
-const STEPS = ['Business', 'Desktop login']
+const STEP_LABELS = ['Business', 'Desktop login', 'Done']
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -82,6 +81,10 @@ export default function OnboardingPage() {
   const selectedCountry = useMemo(
     () => COUNTRY_OPTIONS.find(item => item.code === form.country) || COUNTRY_OPTIONS[0],
     [form.country]
+  )
+  const selectedBusinessType = useMemo(
+    () => BUSINESS_TYPE_OPTIONS.find(item => item.value === form.businessType) || BUSINESS_TYPE_OPTIONS[0],
+    [form.businessType]
   )
 
   // This wizard only makes sense for a signed-in Clerk user — bounce back to
@@ -220,6 +223,7 @@ export default function OnboardingPage() {
       const { data: biz } = await clerkSupabase.from('businesses').select('trial_ends_at').eq('id', businessId).maybeSingle()
       if (biz?.trial_ends_at) setTrialEndsAt(biz.trial_ends_at)
       setDone(true)
+      setStep(2)
     } catch (error) {
       setMessage(error.message)
     } finally {
@@ -264,60 +268,52 @@ export default function OnboardingPage() {
   }
 
   const isInvite = Boolean(invite?.invite_token)
+  const SelectedIcon = BUSINESS_TYPE_ICONS[form.businessType]
+
+  if (!clerkEnabled) return <BrandLoader message={clerkOrFallbackMessage()} />
+  if (!hasSupabaseConfig) return <BrandLoader message="Supabase configuration is required for tenant bootstrap." />
+  if (!isSignedIn) return <BrandLoader message="Taking you to sign in…" />
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-      <Sidebar />
-      <main style={{ flex: 1, padding: '40px 36px' }}>
-        <div style={{ maxWidth: 1080 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div style={{ padding: '24px 36px 0' }}>
+        <img src="/debbit-logo-white.png" alt="debbit" style={{ height: 22, width: 'auto', display: 'block' }} />
+      </div>
+      <div style={{ padding: '32px 36px 60px' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          {!isInvite ? <StepProgress step={step} /> : null}
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
             <EqualsMark />
             <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--balance-pink)' }}>
-              {isInvite ? 'Team invite' : `Step ${step + 1} of ${STEPS.length} · ${STEPS[step]}`}
+              {isInvite ? 'Team invite' : done ? "You're in" : step === 0 ? 'Tell us about your business' : 'Almost there'}
             </span>
           </div>
           <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, marginBottom: 10, color: 'var(--paper-white)' }}>
-            {isInvite ? 'Join your team' : step === 0 ? 'Tell us about your business' : 'Set your desktop password'}
+            {isInvite ? 'Join your team' : done ? 'Your business is live' : step === 0 ? 'What kind of business is this?' : 'Set your desktop password'}
           </h1>
           <p style={{ color: 'var(--text-muted)', marginBottom: 28, fontSize: 15, lineHeight: 1.6, maxWidth: 620 }}>
             {isInvite
               ? 'Accept the staff invite and join the business.'
-              : step === 0
-                ? 'A couple of details, then one password for the desktop app and you are done.'
-                : 'debbit OS signs in with this password, not your Google/email account. Install the desktop app any time and use it there.'}
+              : done
+                ? 'Install debbit OS and sign in to start working — everything below is already waiting for you.'
+                : step === 0
+                  ? 'Pick what you sell — it shapes the modules and chart of accounts debbit OS sets up for you.'
+                  : 'debbit OS signs in with this password, not your Google/email account. Install the desktop app any time and use it there.'}
           </p>
 
-          {!clerkEnabled ? (
-            <div style={card}>{clerkOrFallbackMessage()}</div>
-          ) : !hasSupabaseConfig ? (
-            <div style={card}>Supabase configuration is required for tenant bootstrap.</div>
-          ) : !isSignedIn ? (
-            <div style={card}>Taking you to sign in…</div>
+          {done ? (
+            <DoneScreen
+              email={user?.primaryEmailAddress?.emailAddress}
+              trialEndsAt={trialEndsAt}
+              businessType={selectedBusinessType}
+              country={selectedCountry}
+              onContinue={() => router.replace('/dashboard')}
+            />
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: '1.05fr .95fr', gap: 20 }}>
               <section style={card}>
-                {done ? (
-                  <>
-                    <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>
-                      You're all set
-                    </div>
-                    <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(47,191,143,0.12)', border: '1px solid rgba(47,191,143,0.35)', fontSize: 13, color: 'var(--paper-white)' }}>
-                      Your business and desktop login are ready.
-                      {trialEndsAt ? (
-                        <div style={{ marginTop: 5, color: 'var(--text-muted)' }}>
-                          Trial ends {new Date(trialEndsAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}. You can add a card any time from Upgrade.
-                        </div>
-                      ) : null}
-                      <div style={{ marginTop: 10, color: 'var(--text-muted)' }}>
-                        Install debbit OS and sign in with {user?.primaryEmailAddress?.emailAddress} and the desktop password you just set.
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
-                      <a href='/downloads/debbit-os-setup-windows.exe' style={buttonLink}>Download debbit OS for Windows</a>
-                      <button style={secondaryButton} onClick={() => router.replace('/dashboard')}>Skip to dashboard</button>
-                    </div>
-                  </>
-                ) : isInvite ? (
+                {isInvite ? (
                   <>
                     <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>Invite summary</div>
                     <div style={{ display: 'grid', gap: 10, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 18 }}>
@@ -330,35 +326,41 @@ export default function OnboardingPage() {
                       <button style={button} disabled={busy} onClick={completeInviteAcceptance}>{busy ? 'Joining…' : 'Accept invite'}</button>
                       <button style={secondaryButton} disabled={busy} onClick={() => setInvite(null)}>Register my own business instead</button>
                     </div>
-                    {message ? (
-                      <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 10, background: 'rgba(244,117,107,0.1)', border: '1px solid rgba(244,117,107,0.3)', fontSize: 13, color: '#f8a29b' }}>
-                        {message}
-                      </div>
-                    ) : null}
+                    {message ? <MessageBox>{message}</MessageBox> : null}
                   </>
                 ) : step === 0 ? (
                   <>
-                    <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>Your business</div>
+                    <div className="font-display" style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: 'var(--paper-white)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Business type</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10, marginBottom: 22 }}>
+                      {BUSINESS_TYPE_OPTIONS.map(opt => (
+                        <BusinessTypeTile key={opt.value} option={opt} active={form.businessType === opt.value} onSelect={() => updateField('businessType', opt.value)} />
+                      ))}
+                    </div>
+
+                    <div className="font-display" style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: 'var(--paper-white)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Country</div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
+                      {COUNTRY_OPTIONS.map(opt => (
+                        <CountryPill key={opt.code} option={opt} active={form.country === opt.code} onSelect={() => selectCountry(opt.code)} />
+                      ))}
+                    </div>
+
                     <input style={input} type='text' placeholder='Owner full name' value={form.fullName} onChange={e => updateField('fullName', e.target.value)} />
                     <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business name' value={form.businessName} onChange={e => updateField('businessName', e.target.value)} />
                     <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business phone (optional)' value={form.phone} onChange={e => updateField('phone', e.target.value)} />
-                    <select style={{ ...input, marginTop: 10 }} value={form.country} onChange={e => selectCountry(e.target.value)}>
-                      {COUNTRY_OPTIONS.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}
-                    </select>
-                    <select style={{ ...input, marginTop: 10 }} value={form.businessType} onChange={e => updateField('businessType', e.target.value)}>
-                      {BUSINESS_TYPE_OPTIONS.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
-                    </select>
+
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
                       <button style={button} onClick={goToDesktopStep}>Continue</button>
                     </div>
-                    {message ? (
-                      <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 10, background: 'rgba(244,117,107,0.1)', border: '1px solid rgba(244,117,107,0.3)', fontSize: 13, color: '#f8a29b' }}>
-                        {message}
-                      </div>
-                    ) : null}
+                    {message ? <MessageBox>{message}</MessageBox> : null}
                   </>
                 ) : (
                   <>
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'rgba(224,139,176,0.14)', color: 'var(--balance-pink)', marginBottom: 18,
+                    }}>
+                      <LockKeyIcon size={28} />
+                    </div>
                     <div className="font-display" style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: 'var(--paper-white)' }}>Desktop login</div>
                     <div style={{ display: 'grid', gap: 10, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 18 }}>
                       <div><b style={{ color: 'var(--paper-white)' }}>Trial:</b> 1-month full access, starts the moment setup completes.</div>
@@ -373,25 +375,17 @@ export default function OnboardingPage() {
                       <button style={secondaryButton} disabled={busy} onClick={() => setStep(0)}>Back</button>
                       <button style={button} disabled={busy} onClick={completeSignup}>{busy ? 'Setting up…' : 'Start free trial'}</button>
                     </div>
-                    {message ? (
-                      <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 10, background: 'rgba(244,117,107,0.1)', border: '1px solid rgba(244,117,107,0.3)', fontSize: 13, color: '#f8a29b' }}>
-                        {message}
-                      </div>
-                    ) : null}
+                    {message ? <MessageBox>{message}</MessageBox> : null}
                   </>
                 )}
               </section>
 
               <section style={card}>
-                {!done && !isInvite ? (
-                  <div style={{ padding: 16, borderRadius: 12, border: '1px solid var(--panel-border)', background: 'var(--midnight-ink)' }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--balance-pink)', marginBottom: 8 }}>Localization preview</div>
-                    <div className="font-display tabular-nums" style={{ fontSize: 15, fontWeight: 600, color: 'var(--paper-white)' }}>{selectedCountry.label}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{form.currency} · {form.taxRegime}</div>
-                  </div>
+                {!isInvite ? (
+                  <BusinessPreview businessType={selectedBusinessType} country={selectedCountry} currency={form.currency} taxRegime={form.taxRegime} Icon={SelectedIcon} />
                 ) : null}
-                {invite && !done ? (
-                  <div style={{ marginTop: !isInvite ? 12 : 0, padding: 14, border: '1px solid var(--panel-border)', borderRadius: 12, background: 'var(--midnight-ink)', fontSize: 12, color: 'var(--text-muted)' }}>
+                {invite ? (
+                  <div style={{ marginTop: !isInvite ? 16 : 0, padding: 14, border: '1px solid var(--panel-border)', borderRadius: 12, background: 'var(--midnight-ink)', fontSize: 12, color: 'var(--text-muted)' }}>
                     Invite detected for <b style={{ color: 'var(--paper-white)' }}>{invite.business_name || invite.business_id}</b> as <b style={{ color: 'var(--paper-white)' }}>{invite.role}</b>.
                   </div>
                 ) : null}
@@ -399,7 +393,155 @@ export default function OnboardingPage() {
             </div>
           )}
         </div>
-      </main>
+      </div>
+    </div>
+  )
+}
+
+function StepProgress({ step }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28, maxWidth: 480 }}>
+      {STEP_LABELS.map((label, i) => (
+        <div key={label} style={{ display: 'flex', alignItems: 'center', flex: i < STEP_LABELS.length - 1 ? 1 : undefined }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 26, height: 26, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 11.5, fontWeight: 700, flexShrink: 0,
+              background: i <= step ? 'var(--balance-pink)' : 'var(--midnight-ink)',
+              color: i <= step ? 'var(--debbit-purple)' : 'var(--text-muted)',
+              border: i <= step ? 'none' : '1px solid var(--panel-border)',
+            }}>
+              {i < step ? '✓' : i + 1}
+            </div>
+            <span style={{ fontSize: 12.5, color: i === step ? 'var(--paper-white)' : 'var(--text-muted)', fontWeight: i === step ? 600 : 400, whiteSpace: 'nowrap' }}>{label}</span>
+          </div>
+          {i < STEP_LABELS.length - 1 ? <div style={{ flex: 1, height: 1, background: i < step ? 'var(--balance-pink)' : 'var(--panel-border)', margin: '0 10px' }} /> : null}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function BusinessTypeTile({ option, active, onSelect }) {
+  const Icon = BUSINESS_TYPE_ICONS[option.value]
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 9, textAlign: 'left',
+        padding: '14px 13px', borderRadius: 12, cursor: 'pointer',
+        border: `1.5px solid ${active ? 'var(--balance-pink)' : 'var(--panel-border)'}`,
+        background: active ? 'rgba(224,139,176,0.12)' : 'var(--midnight-ink)',
+        color: 'var(--paper-white)', fontFamily: 'var(--font-body)',
+        transition: 'border-color .15s, background .15s', boxSizing: 'border-box',
+      }}
+    >
+      <span style={{ color: active ? 'var(--balance-pink)' : 'var(--text-muted)' }}><Icon size={24} /></span>
+      <span style={{ fontSize: 12.5, fontWeight: 600, lineHeight: 1.3 }}>{option.label}</span>
+    </button>
+  )
+}
+
+function CountryPill({ option, active, onSelect }) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px', borderRadius: 999, cursor: 'pointer',
+        border: `1.5px solid ${active ? 'var(--balance-pink)' : 'var(--panel-border)'}`,
+        background: active ? 'rgba(224,139,176,0.12)' : 'var(--midnight-ink)',
+        color: active ? 'var(--paper-white)' : 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: 13,
+        fontWeight: active ? 600 : 400,
+      }}
+    >
+      <span style={{ fontSize: 16, lineHeight: 1 }}>{option.flag}</span>{option.label}
+    </button>
+  )
+}
+
+function BusinessPreview({ businessType, country, currency, taxRegime, Icon }) {
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(224,139,176,0.14)', color: 'var(--balance-pink)', flexShrink: 0,
+        }}>
+          {Icon ? <Icon size={26} /> : null}
+        </div>
+        <div>
+          <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: 'var(--paper-white)' }}>{businessType.label}</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{businessType.tagline}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gap: 10, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 18 }}>
+        <div><b style={{ color: 'var(--paper-white)' }}>Identity:</b> Clerk session for the owner/admin.</div>
+        <div><b style={{ color: 'var(--paper-white)' }}>Business tenant:</b> Supabase `businesses` record.</div>
+        <div><b style={{ color: 'var(--paper-white)' }}>Owner membership:</b> first `business_members` row with `OWNER` role.</div>
+        <div><b style={{ color: 'var(--paper-white)' }}>Accounting seed:</b> chart of accounts auto-seeded for {businessType.label.toLowerCase()}.</div>
+      </div>
+
+      <div style={{ padding: 16, borderRadius: 12, border: '1px solid var(--panel-border)', background: 'var(--midnight-ink)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--balance-pink)', marginBottom: 8 }}>Localization preview</div>
+        <div className="font-display tabular-nums" style={{ fontSize: 15, fontWeight: 600, color: 'var(--paper-white)' }}>
+          <span style={{ marginRight: 8 }}>{country.flag}</span>{country.label}
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{currency} · {taxRegime}</div>
+      </div>
+    </div>
+  )
+}
+
+function DoneScreen({ email, trialEndsAt, businessType, country, onContinue }) {
+  const Icon = BUSINESS_TYPE_ICONS[businessType.value]
+  return (
+    <div style={{ ...card, maxWidth: 640, margin: '0 auto', textAlign: 'center', padding: '44px 32px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)', width: 280, height: 280, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(224,139,176,0.28) 0%, rgba(224,139,176,0) 70%)',
+      }} />
+      <div style={{ position: 'relative' }}>
+        <div style={{ color: 'var(--balance-pink)', marginBottom: 14, display: 'flex', justifyContent: 'center' }}>
+          <CheckBadgeIcon size={56} />
+        </div>
+        <div className="font-display" style={{ fontSize: 20, fontWeight: 600, color: 'var(--paper-white)', marginBottom: 10 }}>
+          {country.flag} {businessType.label} — ready to go
+        </div>
+        {trialEndsAt ? (
+          <div style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>
+            Trial ends {new Date(trialEndsAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}. You can add a card any time from Upgrade.
+          </div>
+        ) : null}
+
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderRadius: 12,
+          background: 'var(--midnight-ink)', border: '1px solid var(--panel-border)', textAlign: 'left', marginBottom: 24,
+        }}>
+          <span style={{ color: 'var(--balance-pink)', flexShrink: 0 }}>{Icon ? <Icon size={24} /> : null}</span>
+          <div style={{ fontSize: 12.5, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+            Install debbit OS and sign in with <b style={{ color: 'var(--paper-white)' }}>{email}</b> and the desktop password you just set.
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a href='/downloads/debbit-os-setup-windows.exe' style={{ ...buttonLink }}>
+            <RocketIcon size={16} />
+            <span style={{ marginLeft: 8 }}>Download debbit OS for Windows</span>
+          </a>
+          <button style={secondaryButton} onClick={onContinue}>Skip to dashboard</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MessageBox({ children }) {
+  return (
+    <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 10, background: 'rgba(244,117,107,0.1)', border: '1px solid rgba(244,117,107,0.3)', fontSize: 13, color: '#f8a29b' }}>
+      {children}
     </div>
   )
 }

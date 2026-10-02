@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Sidebar from '../components/Sidebar'
+import Protected from '../components/Protected'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../lib/clerk'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 
@@ -52,9 +52,8 @@ export default function Dashboard() {
   const flaggedCount = rows.filter(row => row.flagged).length
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-      <Sidebar />
-      <div style={{ flex: 1, padding: '32px 24px', overflowY: 'auto' }}>
+    <Protected>
+      <div style={{ padding: '32px 24px', overflowY: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
           <div>
             <div className="font-display" style={{ fontSize: 22, fontWeight: 600, color: 'var(--paper-white)' }}>debbit OS - CFO Dashboard</div>
@@ -172,7 +171,7 @@ export default function Dashboard() {
             : 'Waiting for Supabase configuration'}
         </div>
       </div>
-    </div>
+    </Protected>
   )
 }
 

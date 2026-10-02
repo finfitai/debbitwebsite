@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import Sidebar from '../components/Sidebar'
+import Protected from '../components/Protected'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../lib/clerk'
 import { hasSupabaseConfig, supabase, useClerkSupabaseClient } from '../lib/supabase'
 import { money, monthLabel } from '../lib/format'
@@ -302,9 +302,8 @@ export default function CfoDashboard() {
   }, [load])
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-      <Sidebar />
-      <main style={{ flex: 1, padding: '32px 28px', overflowY: 'auto' }}>
+    <Protected>
+      <div style={{ padding: '32px 28px', overflowY: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
             <div className="font-display" style={{ fontSize: 22, fontWeight: 600, color: 'var(--paper-white)' }}>CFO Overview</div>
@@ -403,8 +402,8 @@ export default function CfoDashboard() {
             ? 'Real-time data synced from debbit OS offline app via Supabase · Auto-refreshes every 30s'
             : 'Waiting for Supabase configuration before loading live CFO metrics'}
         </div>
-      </main>
-    </div>
+      </div>
+    </Protected>
   )
 }
 

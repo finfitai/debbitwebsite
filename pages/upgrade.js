@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
-import Sidebar from '../components/Sidebar'
+import Protected from '../components/Protected'
 import { useAuth } from '../lib/clerk'
 import { useRouter } from 'next/router'
 import { useClerkSupabaseClient } from '../lib/supabase'
@@ -124,9 +124,8 @@ export default function UpgradePage() {
     : null
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-      <Sidebar />
-      <main style={{ flex: 1, padding: '48px 28px', display: 'flex', justifyContent: 'center' }}>
+    <Protected>
+      <main style={{ padding: '48px 28px', display: 'flex', justifyContent: 'center' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 14 }}>
             <EqualsMark />
@@ -177,6 +176,6 @@ export default function UpgradePage() {
           </div>
         </div>
       </main>
-    </div>
+    </Protected>
   )
 }
