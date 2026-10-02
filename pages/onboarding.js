@@ -188,6 +188,11 @@ export default function OnboardingPage() {
         p_tax_regime: form.taxRegime,
         p_business_type: form.businessType,
         p_full_name: form.fullName.trim(),
+        // Fallback for when Clerk's session token doesn't carry an email claim
+        // (requires a dashboard "Customize session token" change the SQL side
+        // can't assume is done) — sourced from Clerk's own verified useUser(),
+        // not just echoed from the form field.
+        p_email: user?.primaryEmailAddress?.emailAddress || form.email.trim() || null,
       })
       if (error) {
         setMessage(error.message)
