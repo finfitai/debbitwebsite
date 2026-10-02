@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { clerkEnabled, useAuth, useClerk } from '../lib/clerk'
 
 const NAV = [
   { href: '/dashboard', label: 'CFO Overview' },
@@ -8,12 +9,18 @@ const NAV = [
   { href: '/admin', label: 'Admin' },
   { href: '/health', label: 'Health' },
   { href: '/support', label: 'Support' },
+]
+
+const LOGGED_OUT_NAV = [
   { href: '/login', label: 'Login' },
   { href: '/register', label: 'Register' },
 ]
 
 export default function Sidebar() {
   const router = useRouter()
+  const { isSignedIn } = useAuth()
+  const clerk = useClerk()
+  const nav = isSignedIn ? NAV : [...NAV, ...LOGGED_OUT_NAV]
   return (
     <div style={{
       width: 220, flexShrink: 0, background: 'var(--midnight-ink)',
@@ -25,7 +32,7 @@ export default function Sidebar() {
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8, letterSpacing: '.02em' }}>CFO Dashboard</div>
       </div>
       <nav style={{ padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {NAV.map(({ href, label }) => {
+        {nav.map(({ href, label }) => {
           const active = router.pathname === href
           return (
             <Link key={href} href={href} style={{
@@ -50,8 +57,24 @@ export default function Sidebar() {
           )
         })}
       </nav>
-      <div style={{ marginTop: 'auto', padding: '16px 20px', borderTop: '1px solid var(--panel-border)', fontSize: 11, color: 'var(--text-muted)' }}>
-        Synced via Supabase
+      <div style={{ marginTop: 'auto' }}>
+        {clerkEnabled && isSignedIn ? (
+          <div style={{ padding: '0 12px 12px' }}>
+            <button
+              onClick={() => clerk.signOut(() => router.push('/login'))}
+              style={{
+                width: '100%', padding: '9px 14px', borderRadius: 8, textAlign: 'left',
+                background: 'transparent', border: '1px solid var(--panel-border)', color: 'var(--text-muted)',
+                fontSize: 13.5, fontFamily: 'var(--font-body)', cursor: 'pointer',
+              }}
+            >
+              Sign out
+            </button>
+          </div>
+        ) : null}
+        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--panel-border)', fontSize: 11, color: 'var(--text-muted)' }}>
+          Synced via Supabase
+        </div>
       </div>
     </div>
   )
