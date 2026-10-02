@@ -128,6 +128,15 @@ export default function RegisterPage() {
     setForm(current => ({ ...current, [key]: value }))
   }
 
+  // Country, currency and tax regime travel together — a plain updateField('country', ...)
+  // would leave currency/taxRegime stuck at whatever they were (the Malaysia defaults,
+  // unless the website-quiz query params set them), creating a business whose country
+  // doesn't match its currency/tax regime.
+  function selectCountry(code) {
+    const next = COUNTRY_OPTIONS.find(item => item.code === code) || COUNTRY_OPTIONS[0]
+    setForm(current => ({ ...current, country: next.code, currency: next.currency, taxRegime: next.tax }))
+  }
+
   // One submit does everything a signup needs to actually be usable:
   // creates the business + trial, THEN creates the staff_accounts MASTER
   // login the desktop app signs in with (see owner-desktop-login's header
@@ -299,7 +308,7 @@ export default function RegisterPage() {
                       <input style={input} type='text' placeholder='Owner full name' value={form.fullName} onChange={e => updateField('fullName', e.target.value)} />
                       <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business name' value={form.businessName} onChange={e => updateField('businessName', e.target.value)} />
                       <input style={{ ...input, marginTop: 10 }} type='text' placeholder='Business phone (optional)' value={form.phone} onChange={e => updateField('phone', e.target.value)} />
-                      <select style={{ ...input, marginTop: 10 }} value={form.country} onChange={e => updateField('country', e.target.value)}>
+                      <select style={{ ...input, marginTop: 10 }} value={form.country} onChange={e => selectCountry(e.target.value)}>
                         {COUNTRY_OPTIONS.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}
                       </select>
                       {!invite?.invite_token ? (
