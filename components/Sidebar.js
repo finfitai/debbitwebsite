@@ -9,6 +9,7 @@ const NAV = [
   { href: '/dashboard', label: 'CFO Overview' },
   { href: '/ops', label: 'Ops Analytics' },
   { href: '/shifts', label: 'Shifts' },
+  { href: '/team', label: 'Team' },
   { href: '/admin', label: 'Admin' },
   { href: '/health', label: 'Health' },
   { href: '/support', label: 'Support' },
