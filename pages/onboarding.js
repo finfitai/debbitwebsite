@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../lib/clerk'
-import { acceptTenantInvite, bootstrapOwnerRegistration, getInviteByToken, hasSupabaseConfig, supabase, useClerkSupabaseClient } from '../lib/supabase'
+import { acceptTenantInvite, bootstrapOwnerRegistration, getInviteByToken, hasSupabaseConfig, supabase, supabaseAnonKey, supabaseUrl, useClerkSupabaseClient } from '../lib/supabase'
 import { EqualsMark } from '../components/ui'
 import { BUSINESS_TYPE_ICONS, CheckBadgeIcon, LockKeyIcon, RocketIcon } from '../components/icons'
 import { BrandLoader } from '../components/Protected'
@@ -214,12 +214,12 @@ export default function OnboardingPage() {
       }
 
       const token = await getToken()
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/owner-desktop-login`, {
+      const res = await fetch(`${supabaseUrl}/functions/v1/owner-desktop-login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+          apikey: supabaseAnonKey,
         },
         body: JSON.stringify({ business_id: businessId, password: desktopPw.pw }),
       })
