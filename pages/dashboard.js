@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import Protected from '../components/Protected'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../lib/clerk'
@@ -238,6 +238,7 @@ export default function CfoDashboard() {
   const clerkSupabase = useClerkSupabaseClient()
   const [businessId, setBusinessId] = useState(null)
   const [businesses, setBusinesses] = useState([])
+  const loadSequence = useRef(0)
   const [metrics, setMetrics] = useState(null)
   const [revenueData, setRevenueData] = useState([])
   const [anomalies, setAnomalies] = useState([])
@@ -275,6 +276,7 @@ export default function CfoDashboard() {
 
   function selectBusiness(nextBusinessId) {
     if (!businesses.some(business => business.id === nextBusinessId)) return
+    loadSequence.current += 1
     setBusinessId(nextBusinessId)
     setMetrics(null)
     setRevenueData([])
@@ -286,6 +288,7 @@ export default function CfoDashboard() {
   }
 
   const load = useCallback(async () => {
+    const sequence = ++loadSequence.current
     if (!clerkSupabase || !isSignedIn || !businessId) {
       setMetrics(null)
       setRevenueData([])
@@ -313,6 +316,7 @@ export default function CfoDashboard() {
         clerkSupabase.from('shift_reconciliations').select('id').eq('flagged', true).eq('business_id', businessId).limit(50),
         clerkSupabase.from('workstation_audit_logs').select('id').eq('business_id', businessId).order('created_at', { ascending: false }).limit(25),
       ])
+      if (sequence !== loadSequence.current) return
       const failedRead = [ticketsRes, shiftsRes, auditRes].find(result => result.error)
       if (failedRead?.error) throw failedRead.error
 
@@ -341,13 +345,14 @@ export default function CfoDashboard() {
       })
       setLastRefresh(new Date().toLocaleTimeString())
     } catch (err) {
+      if (sequence !== loadSequence.current) return
       setError('Failed to load your business data. Check the Clerk–Supabase connection and refresh.')
       setMetrics(null)
       setRevenueData([])
       setAnomalies([])
       setTrustSummary({ openTickets: 0, flaggedShifts: 0, recentAudit: 0, liveMode: false })
     } finally {
-      setLoading(false)
+      if (sequence === loadSequence.current) setLoading(false)
     }
   }, [isSignedIn, clerkSupabase, businessId])
 
