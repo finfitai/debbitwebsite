@@ -2,19 +2,11 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Protected from '../components/Protected'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../lib/clerk'
-import { hasSupabaseConfig, supabase, useClerkSupabaseClient } from '../lib/supabase'
+import { hasSupabaseConfig, useClerkSupabaseClient } from '../lib/supabase'
 import { money, monthLabel } from '../lib/format'
 
-// ⚠️ TENANT SCOPING: the Supabase reads below are NOT yet scoped to the signed-in
-// owner's business — the Clerk→Supabase identity bridge + RLS-by-business are not
-// finalized (see lib/supabase.js), so with the anon key these queries can read
-// across tenants. Until the bridge lands, this view must be treated as
-// single-/demo-tenant only. Do NOT expose it to multiple paying tenants as-is.
-// Fix path: mint a Supabase JWT from Clerk (or proxy via an authenticated edge
-// function) and add `.eq('business_id', <owner's business>)` to every query.
-
-async function fetchGlSum({ category, entryType, monthOffset = 0 }) {
-  if (!supabase) return 0
+async function fetchGlSum(client, businessId, { category, entryType, monthOffset = 0 }) {
+  if (!client || !businessId) return 0
   const date = new Date()
   date.setMonth(date.getMonth() + monthOffset)
   const year = date.getFullYear()
@@ -22,37 +14,43 @@ async function fetchGlSum({ category, entryType, monthOffset = 0 }) {
   const from = `${year}-${month}-01`
   const to = `${year}-${month}-31`
 
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from('gl_entries')
     .select('amount, gl_accounts!inner(category)')
     .eq('entry_type', entryType)
+    .eq('business_id', businessId)
     .eq('gl_accounts.category', category)
     .gte('entry_date', from)
     .lte('entry_date', to)
 
-  if (error || !data) return 0
+  if (error) throw error
+  if (!data) return 0
   return data.reduce((sum, row) => sum + (row.amount || 0), 0)
 }
 
-async function fetchGlBalance(code, normalSide) {
-  if (!supabase) return 0
-  const { data: dr } = await supabase.from('gl_entries')
+async function fetchGlBalance(client, businessId, code, normalSide) {
+  if (!client || !businessId) return 0
+  const { data: dr, error: drError } = await client.from('gl_entries')
     .select('amount, gl_accounts!inner(code)')
     .eq('entry_type', 'DEBIT')
+    .eq('business_id', businessId)
     .eq('gl_accounts.code', code)
 
-  const { data: cr } = await supabase.from('gl_entries')
+  const { data: cr, error: crError } = await client.from('gl_entries')
     .select('amount, gl_accounts!inner(code)')
     .eq('entry_type', 'CREDIT')
+    .eq('business_id', businessId)
     .eq('gl_accounts.code', code)
 
+  if (drError) throw drError
+  if (crError) throw crError
   const drSum = (dr || []).reduce((sum, row) => sum + (row.amount || 0), 0)
   const crSum = (cr || []).reduce((sum, row) => sum + (row.amount || 0), 0)
   return normalSide === 'DEBIT' ? drSum - crSum : crSum - drSum
 }
 
-async function fetchSevenDayRevenue() {
-  if (!supabase) return []
+async function fetchSevenDayRevenue(client, businessId) {
+  if (!client || !businessId) return []
   const days = []
   for (let i = 6; i >= 0; i--) {
     const date = new Date()
@@ -60,11 +58,14 @@ async function fetchSevenDayRevenue() {
     days.push(date.toISOString().slice(0, 10))
   }
 
-  const { data } = await supabase.from('sales')
+  const { data, error } = await client.from('sales')
     .select('sale_date, total')
     .gte('sale_date', days[0])
     .lte('sale_date', days[days.length - 1])
     .eq('is_void', false)
+    .eq('business_id', businessId)
+
+  if (error) throw error
 
   const totals = {}
   days.forEach(day => { totals[day] = 0 })
@@ -75,16 +76,18 @@ async function fetchSevenDayRevenue() {
   return days.map(day => ({ date: day, total: totals[day] }))
 }
 
-async function fetchAnomalies() {
-  if (!supabase) return []
+async function fetchAnomalies(client, businessId) {
+  if (!client || !businessId) return []
   const items = []
 
-  const { data: shifts } = await supabase.from('shift_reconciliations')
+  const { data: shifts, error: shiftsError } = await client.from('shift_reconciliations')
     .select('shift_end, variance_sen, employees(full_name)')
     .eq('flagged', true)
+    .eq('business_id', businessId)
     .gte('shift_end', new Date(Date.now() - 7 * 86400000).toISOString())
     .order('shift_end', { ascending: false })
     .limit(3)
+  if (shiftsError) throw shiftsError
 
   for (const shift of shifts || []) {
     const variance = ((shift.variance_sen || 0) / 100).toFixed(2)
@@ -97,10 +100,12 @@ async function fetchAnomalies() {
     })
   }
 
-  const { data: budgets } = await supabase.from('budgets')
+  const { data: budgets, error: budgetsError } = await client.from('budgets')
     .select('department, category, monthly_limit, spent')
     .filter('spent', 'gte', 0)
+    .eq('business_id', businessId)
     .limit(20)
+  if (budgetsError) throw budgetsError
 
   for (const budget of budgets || []) {
     if (!budget.monthly_limit || budget.monthly_limit <= 0) continue
@@ -117,17 +122,21 @@ async function fetchAnomalies() {
 
   const now = Date.now()
   const dateOffset = (offset) => new Date(now + offset * 86400000).toISOString().slice(0, 10)
-  const { data: currentWeek } = await supabase.from('sales')
+  const { data: currentWeek, error: currentError } = await client.from('sales')
     .select('total')
     .eq('is_void', false)
+    .eq('business_id', businessId)
     .gte('sale_date', dateOffset(-7))
     .lte('sale_date', dateOffset(0))
+  if (currentError) throw currentError
 
-  const { data: previousWeek } = await supabase.from('sales')
+  const { data: previousWeek, error: previousError } = await client.from('sales')
     .select('total')
     .eq('is_void', false)
+    .eq('business_id', businessId)
     .gte('sale_date', dateOffset(-14))
     .lte('sale_date', dateOffset(-8))
+  if (previousError) throw previousError
 
   const currentTotal = (currentWeek || []).reduce((sum, row) => sum + (row.total || 0), 0)
   const previousTotal = (previousWeek || []).reduce((sum, row) => sum + (row.total || 0), 0)
@@ -178,23 +187,21 @@ function BarChart({ data }) {
   )
 }
 
-function BillingBanner() {
+function BillingBanner({ client, businessId }) {
   const { isSignedIn } = useAuth()
-  const clerkSupabase = useClerkSupabaseClient()
   const [billing, setBilling] = useState(null)
 
   useEffect(() => {
-    if (!isSignedIn || !clerkSupabase) return
+    if (!isSignedIn || !client || !businessId) return
     let cancelled = false
-    clerkSupabase
+    client
       .from('businesses')
       .select('subscription_status, trial_ends_at')
-      .order('created_at', { ascending: true })
-      .limit(1)
+      .eq('id', businessId)
       .maybeSingle()
       .then(({ data }) => { if (!cancelled) setBilling(data || null) })
     return () => { cancelled = true }
-  }, [isSignedIn, clerkSupabase])
+  }, [isSignedIn, client, businessId])
 
   if (!billing || billing.subscription_status === 'active') return null
 
@@ -227,6 +234,8 @@ function BillingBanner() {
 
 export default function CfoDashboard() {
   const { isLoaded, isSignedIn } = useAuth()
+  const clerkSupabase = useClerkSupabaseClient()
+  const [businessId, setBusinessId] = useState(null)
   const [metrics, setMetrics] = useState(null)
   const [revenueData, setRevenueData] = useState([])
   const [anomalies, setAnomalies] = useState([])
@@ -235,8 +244,23 @@ export default function CfoDashboard() {
   const [lastRefresh, setLastRefresh] = useState(null)
   const [trustSummary, setTrustSummary] = useState({ openTickets: 0, flaggedShifts: 0, recentAudit: 0, liveMode: false })
 
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || !clerkSupabase) {
+      setBusinessId(null)
+      return
+    }
+    let cancelled = false
+    clerkSupabase.from('businesses').select('id').order('created_at', { ascending: true }).limit(1).maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) setError('Could not securely load your business. Please refresh.')
+        setBusinessId(error ? null : data?.id || null)
+      })
+    return () => { cancelled = true }
+  }, [isLoaded, isSignedIn, clerkSupabase])
+
   const load = useCallback(async () => {
-    if (!supabase || !isSignedIn) {
+    if (!clerkSupabase || !isSignedIn || !businessId) {
       setMetrics(null)
       setRevenueData([])
       setAnomalies([])
@@ -249,20 +273,22 @@ export default function CfoDashboard() {
     setError(null)
     try {
       const [revenue, expenses, cogsExp, cash, ar, ap, days7, anoms, exp1, exp2, ticketsRes, shiftsRes, auditRes] = await Promise.all([
-        fetchGlSum({ category: 'REVENUE', entryType: 'CREDIT' }),
-        fetchGlSum({ category: 'EXPENSE', entryType: 'DEBIT' }),
-        fetchGlSum({ category: 'COGS', entryType: 'DEBIT' }),
-        fetchGlBalance('1100', 'DEBIT'),
-        fetchGlBalance('1200', 'DEBIT'),
-        fetchGlBalance('2100', 'CREDIT'),
-        fetchSevenDayRevenue(),
-        fetchAnomalies(),
-        fetchGlSum({ category: 'EXPENSE', entryType: 'DEBIT', monthOffset: -1 }),
-        fetchGlSum({ category: 'EXPENSE', entryType: 'DEBIT', monthOffset: -2 }),
-        supabase.from('support_tickets').select('id,status').eq('status', 'open'),
-        supabase.from('shift_reconciliations').select('id').eq('flagged', true).limit(50),
-        supabase.from('workstation_audit_logs').select('id').order('created_at', { ascending: false }).limit(25),
+        fetchGlSum(clerkSupabase, businessId, { category: 'REVENUE', entryType: 'CREDIT' }),
+        fetchGlSum(clerkSupabase, businessId, { category: 'EXPENSE', entryType: 'DEBIT' }),
+        fetchGlSum(clerkSupabase, businessId, { category: 'COGS', entryType: 'DEBIT' }),
+        fetchGlBalance(clerkSupabase, businessId, '1100', 'DEBIT'),
+        fetchGlBalance(clerkSupabase, businessId, '1200', 'DEBIT'),
+        fetchGlBalance(clerkSupabase, businessId, '2100', 'CREDIT'),
+        fetchSevenDayRevenue(clerkSupabase, businessId),
+        fetchAnomalies(clerkSupabase, businessId),
+        fetchGlSum(clerkSupabase, businessId, { category: 'EXPENSE', entryType: 'DEBIT', monthOffset: -1 }),
+        fetchGlSum(clerkSupabase, businessId, { category: 'EXPENSE', entryType: 'DEBIT', monthOffset: -2 }),
+        clerkSupabase.from('support_tickets').select('id,status').eq('status', 'open').eq('business_id', businessId),
+        clerkSupabase.from('shift_reconciliations').select('id').eq('flagged', true).eq('business_id', businessId).limit(50),
+        clerkSupabase.from('workstation_audit_logs').select('id').eq('business_id', businessId).order('created_at', { ascending: false }).limit(25),
       ])
+      const failedRead = [ticketsRes, shiftsRes, auditRes].find(result => result.error)
+      if (failedRead?.error) throw failedRead.error
 
       const totalExpenses = expenses + cogsExp
       const netProfit = revenue - totalExpenses
@@ -289,11 +315,15 @@ export default function CfoDashboard() {
       })
       setLastRefresh(new Date().toLocaleTimeString())
     } catch (err) {
-      setError('Failed to load data. Please refresh.')
+      setError('Failed to load your business data. Check the Clerk–Supabase connection and refresh.')
+      setMetrics(null)
+      setRevenueData([])
+      setAnomalies([])
+      setTrustSummary({ openTickets: 0, flaggedShifts: 0, recentAudit: 0, liveMode: false })
     } finally {
       setLoading(false)
     }
-  }, [isSignedIn])
+  }, [isSignedIn, clerkSupabase, businessId])
 
   useEffect(() => { load() }, [load])
   useEffect(() => {
@@ -317,7 +347,7 @@ export default function CfoDashboard() {
           </div>
         </div>
 
-        <BillingBanner />
+        <BillingBanner client={clerkSupabase} businessId={businessId} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', background: 'rgba(47,191,143,0.1)', border: '1px solid rgba(47,191,143,0.3)', borderRadius: 9, marginBottom: 24, fontSize: 12 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2FBF8F', display: 'inline-block', boxShadow: '0 0 6px #2FBF8F' }} />

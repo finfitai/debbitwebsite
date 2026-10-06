@@ -1,4 +1,4 @@
-# debbit OS — Cloud Owner Dashboard: setup & the tenant-scoping gap
+# debbit OS — Cloud Owner Dashboard setup and verification status
 
 The dashboard (`apps/dashboard`, Next.js + Clerk + Supabase) shows an owner their
 business numbers (P&L, cash, AR/AP, 7-day revenue, smart alerts) read live from
@@ -6,32 +6,27 @@ the Supabase cloud that the desktop app syncs into.
 
 ## Status
 
-Functional UI + queries are in place, **but the data layer is not yet scoped to
-the signed-in owner's business.** The reads in `pages/dashboard.js` go through the
-**anon** Supabase key with **no per-business filter and no authenticated user
-token**, because the Clerk→Supabase identity bridge is not finalized
-(see the comment in `lib/supabase.js`). With a permissive anon role this means a
-query can read across tenants.
+The owner dashboard, tenant admin, and support pages use the Clerk-authenticated
+Supabase client. Dashboard and support reads also filter by the selected
+business id; Supabase RLS remains the server-side tenant boundary. Production
+builds pass in both the website repo and the product repo's dashboard copy.
 
-➡️ **Treat the dashboard as single-/demo-tenant only until the bridge below is
-done. Do not onboard multiple paying tenants to it as-is.**
+The production Clerk-to-Supabase third-party-auth configuration and a live
+two-business isolation test still need verification. The dashboard currently
+selects the owner's oldest visible business; a business switcher is not yet
+available when an owner belongs to more than one business.
 
-## What completes it (requires cloud config — owner action)
+## Production verification still required
 
-1. **Clerk → Supabase JWT bridge.** Configure a Clerk JWT template for Supabase
-   (or use Supabase third-party auth with Clerk) so the web app sends an
-   authenticated token carrying the user identity. Then create the Supabase
-   client with that token (e.g. `accessToken: () => clerkGetToken()`), so reads
-   run as the authenticated user — not anon.
-2. **RLS by business.** Ensure row-level security on `gl_entries`, `sales`,
-   `gl_accounts`, `shift_reconciliations`, `budgets`, etc. restricts rows to the
-   businesses the authenticated user belongs to (`business_members`). The desktop
-   sync + edge functions already use the service role; the *dashboard* must use
-   the user token so RLS applies.
-3. **Resolve the owner's business** from `business_members` for the signed-in
-   user and add `.eq('business_id', <id>)` to every query in `dashboard.js`
-   (defense-in-depth on top of RLS), with a business switcher for multi-business
-   owners (the `pages/ops.js` selector is a starting pattern).
+1. In Supabase Authentication, configure Clerk as a third-party auth provider
+   for this exact project. The client sends a fresh Clerk session token using
+   Supabase's `accessToken` option.
+2. Sign in as an owner of Business A and verify its dashboard, admin, and support
+   data load. Then verify Business B's rows are never returned to that user.
+   Repeat with an unaffiliated Clerk account and confirm it sees no tenant data.
+3. Configure the public Supabase URL, anon key, Clerk publishable key, and the
+   server-side Clerk secret in the deployment environment. Never expose the
+   Clerk secret or Supabase service-role key to the browser.
 
 ## Env
 

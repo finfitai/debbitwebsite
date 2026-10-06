@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import AppShell from '../components/AppShell'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../lib/clerk'
-import { hasSupabaseConfig, supabase } from '../lib/supabase'
+import { hasSupabaseConfig, useClerkSupabaseClient } from '../lib/supabase'
 import { Panel, StatCard, input, miniInput, primaryButton, secondaryButton } from '../components/ui'
 
 const ROLE_OPTIONS = ['OWNER', 'ADMIN', 'ACCOUNTANT', 'CASHIER', 'VIEWER']
@@ -9,6 +9,7 @@ const ROLE_OPTIONS = ['OWNER', 'ADMIN', 'ACCOUNTANT', 'CASHIER', 'VIEWER']
 export default function AdminPage() {
   const { isLoaded, isSignedIn } = useAuth()
   const { user } = useUser()
+  const supabase = useClerkSupabaseClient()
   const [businesses, setBusinesses] = useState([])
   const [members, setMembers] = useState([])
   const [invites, setInvites] = useState([])

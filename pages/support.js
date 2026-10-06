@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import AppShell from '../components/AppShell'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../lib/clerk'
-import { hasSupabaseConfig, supabase } from '../lib/supabase'
+import { hasSupabaseConfig, useClerkSupabaseClient } from '../lib/supabase'
 import { Panel, StatCard, InfoStrip, input, primaryButton } from '../components/ui'
 
 export default function SupportPage() {
   const { isLoaded, isSignedIn } = useAuth()
+  const supabase = useClerkSupabaseClient()
+  const [businessId, setBusinessId] = useState(null)
   const [tickets, setTickets] = useState([])
   const [subject, setSubject] = useState('')
   const [details, setDetails] = useState('')
@@ -15,13 +17,16 @@ export default function SupportPage() {
   const [summary, setSummary] = useState({ openTickets: 0, urgentTickets: 0, activeWorkstations: 0, recentAudit: 0 })
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn) return
+    if (!isLoaded || !isSignedIn || !supabase) return
     async function load() {
-      if (!supabase) return
+      const { data: business, error: businessError } = await supabase
+        .from('businesses').select('id').order('created_at', { ascending: true }).limit(1).maybeSingle()
+      if (businessError || !business?.id) return
+      setBusinessId(business.id)
       const [ticketRes, wsRes, auditRes] = await Promise.all([
-        supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(20),
-        supabase.from('workstation_devices').select('id,is_active'),
-        supabase.from('workstation_audit_logs').select('id').order('created_at', { ascending: false }).limit(25),
+        supabase.from('support_tickets').select('*').eq('business_id', business.id).order('created_at', { ascending: false }).limit(20),
+        supabase.from('workstation_devices').select('id,is_active').eq('business_id', business.id),
+        supabase.from('workstation_audit_logs').select('id').eq('business_id', business.id).order('created_at', { ascending: false }).limit(25),
       ])
       const nextTickets = ticketRes.data || []
       setTickets(nextTickets)
@@ -33,18 +38,18 @@ export default function SupportPage() {
       })
     }
     load()
-  }, [isLoaded, isSignedIn])
+  }, [isLoaded, isSignedIn, supabase])
 
   async function createTicket() {
     if (!subject?.trim() || !details?.trim()) {
       setMessage('Subject and details are required.')
       return
     }
-    if (!supabase) return
+    if (!supabase || !businessId) return
     setLoading(true)
     try {
-      // TODO: attach business_id once available from Clerk user metadata or a prop
       const { error } = await supabase.from('support_tickets').insert({
+        business_id: businessId,
         subject,
         details,
         severity,
