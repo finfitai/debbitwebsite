@@ -4,6 +4,7 @@ import Protected from '../components/Protected'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth } from '../lib/clerk'
 import { hasSupabaseConfig, useClerkSupabaseClient } from '../lib/supabase'
 import { money, monthLabel } from '../lib/format'
+import { chooseAccessibleBusiness } from '../lib/businessSelection.mjs'
 
 async function fetchGlSum(client, businessId, { category, entryType, monthOffset = 0 }) {
   if (!client || !businessId) return 0
@@ -233,9 +234,10 @@ function BillingBanner({ client, businessId }) {
 }
 
 export default function CfoDashboard() {
-  const { isLoaded, isSignedIn } = useAuth()
+  const { isLoaded, isSignedIn, userId } = useAuth()
   const clerkSupabase = useClerkSupabaseClient()
   const [businessId, setBusinessId] = useState(null)
+  const [businesses, setBusinesses] = useState([])
   const [metrics, setMetrics] = useState(null)
   const [revenueData, setRevenueData] = useState([])
   const [anomalies, setAnomalies] = useState([])
@@ -247,17 +249,41 @@ export default function CfoDashboard() {
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !clerkSupabase) {
       setBusinessId(null)
+      setBusinesses([])
       return
     }
     let cancelled = false
-    clerkSupabase.from('businesses').select('id').order('created_at', { ascending: true }).limit(1).maybeSingle()
+    clerkSupabase.from('businesses').select('id, name').order('name', { ascending: true })
       .then(({ data, error }) => {
         if (cancelled) return
-        if (error) setError('Could not securely load your business. Please refresh.')
-        setBusinessId(error ? null : data?.id || null)
+        if (error) {
+          setError('Could not securely load your businesses. Please refresh.')
+          setBusinesses([])
+          setBusinessId(null)
+          return
+        }
+        const accessibleBusinesses = data || []
+        setBusinesses(accessibleBusinesses)
+        const savedId = typeof window !== 'undefined'
+          ? window.localStorage.getItem(`debbit-dashboard-business:${userId}`)
+          : null
+        const selected = chooseAccessibleBusiness(accessibleBusinesses, savedId)
+        setBusinessId(selected?.id || null)
       })
     return () => { cancelled = true }
-  }, [isLoaded, isSignedIn, clerkSupabase])
+  }, [isLoaded, isSignedIn, clerkSupabase, userId])
+
+  function selectBusiness(nextBusinessId) {
+    if (!businesses.some(business => business.id === nextBusinessId)) return
+    setBusinessId(nextBusinessId)
+    setMetrics(null)
+    setRevenueData([])
+    setAnomalies([])
+    setTrustSummary({ openTickets: 0, flaggedShifts: 0, recentAudit: 0, liveMode: false })
+    if (typeof window !== 'undefined' && userId) {
+      window.localStorage.setItem(`debbit-dashboard-business:${userId}`, nextBusinessId)
+    }
+  }
 
   const load = useCallback(async () => {
     if (!clerkSupabase || !isSignedIn || !businessId) {
@@ -340,6 +366,14 @@ export default function CfoDashboard() {
             <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>{monthLabel()} · debbit OS</div>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {businesses.length > 1 && (
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)', fontSize: 12 }}>
+                Business
+                <select aria-label="Select business" value={businessId || ''} onChange={event => selectBusiness(event.target.value)} style={{ padding: '8px 12px', background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 9, color: 'var(--paper-white)', fontSize: 13 }}>
+                  {businesses.map(business => <option key={business.id} value={business.id}>{business.name || business.id}</option>)}
+                </select>
+              </label>
+            )}
             {lastRefresh ? <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Refreshed {lastRefresh}</span> : null}
             <button onClick={load} style={{ padding: '8px 16px', background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 9, color: 'var(--paper-white)', cursor: 'pointer', fontSize: 13, fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }}>
               Refresh
