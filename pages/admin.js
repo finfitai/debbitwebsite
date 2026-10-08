@@ -1,24 +1,46 @@
 import { useEffect, useMemo, useState } from 'react'
 import AppShell from '../components/AppShell'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../lib/clerk'
-import { hasSupabaseConfig, useClerkSupabaseClient } from '../lib/supabase'
+import { hasSupabaseConfig, supabaseAnonKey, supabaseUrl, useClerkSupabaseClient } from '../lib/supabase'
 import { Panel, StatCard, input, miniInput, primaryButton, secondaryButton } from '../components/ui'
 
-const ROLE_OPTIONS = ['OWNER', 'ADMIN', 'ACCOUNTANT', 'CASHIER', 'VIEWER']
+// These are the roles accepted by staff_accounts and the Debbit Desktop login.
+const DESKTOP_ROLE_OPTIONS = ['MASTER', 'SALES', 'POS', 'PURCHASE', 'INVENTORY', 'HR', 'ACCOUNTANT']
+// Cloud dashboard membership is a separate permission layer from a Desktop login.
+const MEMBER_ROLE_OPTIONS = ['OWNER', 'ADMIN', 'MANAGER', 'ACCOUNTANT', 'CASHIER', 'WAREHOUSE', 'VIEWER']
+
+async function callStaffAuth(getToken, action, businessId, payload = {}) {
+  const token = await getToken()
+  if (!token) throw new Error('Your dashboard session has expired. Sign in again.')
+  const response = await fetch(`${supabaseUrl}/functions/v1/staff-auth`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: supabaseAnonKey,
+      'x-clerk-token': token,
+    },
+    body: JSON.stringify({ action, business_id: businessId, ...payload }),
+  })
+  const result = await response.json().catch(() => ({}))
+  if (!response.ok || !result.ok) throw new Error(result.error || `Staff account request failed (${response.status})`)
+  return result.data
+}
 
 export default function AdminPage() {
-  const { isLoaded, isSignedIn } = useAuth()
+  const { isLoaded, isSignedIn, getToken } = useAuth()
   const { user } = useUser()
   const supabase = useClerkSupabaseClient()
   const [businesses, setBusinesses] = useState([])
   const [members, setMembers] = useState([])
   const [invites, setInvites] = useState([])
   const [activeBusiness, setActiveBusiness] = useState('')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState('CASHIER')
+  const [password, setPassword] = useState('')
+  const [role, setRole] = useState('POS')
+  const [staffAccounts, setStaffAccounts] = useState([])
   const [status, setStatus] = useState('')
   const [busy, setBusy] = useState(false)
-  const [inviteLink, setInviteLink] = useState('')
   const [workstations, setWorkstations] = useState([])
   const [terminalAudit, setTerminalAudit] = useState([])
   const [summary, setSummary] = useState({ activeMembers: 0, pendingInvites: 0, activeWorkstations: 0, auditEvents: 0 })
@@ -87,31 +109,46 @@ export default function AdminPage() {
     load()
   }, [isLoaded, isSignedIn])
 
-  async function sendInvite() {
-    if (!supabase || !email || !activeBusiness) return
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || !activeBusiness) return
+    let cancelled = false
+    callStaffAuth(getToken, 'list', activeBusiness)
+      .then(rows => { if (!cancelled) setStaffAccounts(rows || []) })
+      .catch(error => { if (!cancelled) setStatus(error.message) })
+    return () => { cancelled = true }
+  }, [isLoaded, isSignedIn, activeBusiness, getToken])
+
+  async function addDesktopUser() {
+    if (!activeBusiness || !fullName.trim() || !email.trim()) return
     setBusy(true)
-    setStatus('Sending invite…')
-    setInviteLink('')
+    setStatus('Adding Desktop login…')
     try {
-      const inviteToken = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
-      const { error } = await supabase.from('tenant_invites').insert({
-        business_id: activeBusiness,
-        email,
+      await callStaffAuth(getToken, 'create', activeBusiness, {
+        full_name: fullName.trim(),
+        email: email.trim(),
+        password,
         role,
-        status: 'SENT',
-        invite_token: inviteToken,
-        expires_at: new Date(Date.now() + 7 * 86400000).toISOString(),
       })
-      if (error) {
-        setStatus(error.message)
-        return
-      }
-      const origin = typeof window !== 'undefined' ? window.location.origin : ''
-      setInviteLink(`${origin}/register?invite_token=${inviteToken}&email=${encodeURIComponent(email)}`)
-      setStatus('Invite recorded. Share the invite link.')
+      const rows = await callStaffAuth(getToken, 'list', activeBusiness)
+      setStaffAccounts(rows || [])
+      setStatus('Desktop login added. Share the sign-in details with the employee.')
+      setFullName('')
       setEmail('')
+      setPassword('')
+    } catch (error) {
+      setStatus(error.message)
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function updateDesktopUser(item, patch) {
+    try {
+      await callStaffAuth(getToken, 'update', activeBusiness, { auth_user_id: item.auth_user_id, ...patch })
+      setStaffAccounts(current => current.map(row => row.auth_user_id === item.auth_user_id ? { ...row, ...patch } : row))
+      setStatus('Desktop login updated.')
+    } catch (error) {
+      setStatus(error.message)
     }
   }
 
@@ -173,35 +210,32 @@ export default function AdminPage() {
               <StatCard label='Recent Audit Events' value={String(summary.auditEvents)} subtext='Latest operational activity' />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: 18, marginBottom: 18 }}>
-              <Panel title='Invite User'>
+              <Panel title='Add Desktop User'>
                 <div style={{ display: 'grid', gap: 12 }}>
                   <select value={activeBusiness} onChange={e => setActiveBusiness(e.target.value)} style={input}>
                     {businesses.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                   </select>
+                  <input style={input} placeholder='Employee full name' value={fullName} onChange={e => setFullName(e.target.value)} />
                   <input style={input} type='email' placeholder='staff@business.com' value={email} onChange={e => setEmail(e.target.value)} />
+                  <input style={input} type='password' autoComplete='new-password' placeholder='Temporary password (8+ characters for a new user)' value={password} onChange={e => setPassword(e.target.value)} />
                   <select value={role} onChange={e => setRole(e.target.value)} style={input}>
-                    {ROLE_OPTIONS.map(item => <option key={item} value={item}>{item}</option>)}
+                    {DESKTOP_ROLE_OPTIONS.map(item => <option key={item} value={item}>{item}</option>)}
                   </select>
-                  <button style={primaryButton} onClick={sendInvite} disabled={busy}>Send Invite</button>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>Creates a Debbit Desktop login. A password is required for a new email; an existing Debbit login keeps its current password.</div>
+                  <button style={primaryButton} onClick={addDesktopUser} disabled={busy || !activeBusiness || !fullName.trim() || !email.trim()}>Add Desktop Login</button>
                   {status ? <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{status}</div> : null}
-                  {inviteLink ? (
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Invite link</div>
-                      <input style={{ ...input, fontSize: 12 }} readOnly value={inviteLink} onFocus={e => e.target.select()} />
-                    </div>
-                  ) : null}
                 </div>
               </Panel>
 
               <Panel title='Readiness Notes'>
                 <div style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(224,139,176,0.1)', border: '1px solid rgba(224,139,176,0.3)', color: 'var(--balance-pink)', fontSize: 13, lineHeight: 1.5 }}>
-                  Clerk handles owner/admin identity. Role changes remain scoped per business membership in Supabase. Invites are tracked in `tenant_invites` for onboarding and auditability.
+                  Desktop logins use the roles supported by Debbit Desktop and are managed through `staff_accounts`. Cloud dashboard memberships and their invites are separate permissions.
                 </div>
               </Panel>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 18 }}>
-              <Panel title='Active Members'>
+              <Panel title='Cloud Dashboard Memberships'>
                 <table style={table}>
                   <thead><tr>{['User', 'Business', 'Role', 'State', 'Action'].map(h => <th key={h} style={th}>{h}</th>)}</tr></thead>
                   <tbody>
@@ -214,7 +248,7 @@ export default function AdminPage() {
                         <td style={td}>{item.businesses?.name || item.business_id}</td>
                         <td style={td}>
                           <select style={miniInput} value={item.role} onChange={e => changeRole(item, e.target.value)}>
-                            {ROLE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            {MEMBER_ROLE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                           </select>
                         </td>
                         <td style={td}>{item.is_active ? 'Active' : 'Disabled'}</td>
@@ -225,7 +259,7 @@ export default function AdminPage() {
                 </table>
               </Panel>
 
-              <Panel title='Recent Invites'>
+              <Panel title='Recent Cloud Membership Invites'>
                 {filteredInvites.length === 0 ? (
                   <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>No invites recorded yet.</div>
                 ) : (
@@ -238,6 +272,35 @@ export default function AdminPage() {
                       ) : null}
                     </div>
                   ))
+                )}
+              </Panel>
+            </div>
+
+            <div style={{ marginTop: 18 }}>
+              <Panel title='Debbit Desktop Logins'>
+                {staffAccounts.length === 0 ? (
+                  <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>No Desktop logins found for this business yet.</div>
+                ) : (
+                  <table style={table}>
+                    <thead><tr>{['User', 'Role', 'State', 'Action'].map(h => <th key={h} style={th}>{h}</th>)}</tr></thead>
+                    <tbody>
+                      {staffAccounts.map(item => {
+                        const isMaster = item.role === 'MASTER'
+                        return (
+                          <tr key={item.auth_user_id}>
+                            <td style={td}><div>{item.full_name}</div><div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{item.email}</div></td>
+                            <td style={td}>
+                              <select style={miniInput} value={item.role} disabled={isMaster} onChange={e => updateDesktopUser(item, { role: e.target.value })}>
+                                {DESKTOP_ROLE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                              </select>
+                            </td>
+                            <td style={td}>{item.is_active ? 'Active' : 'Disabled'}</td>
+                            <td style={td}><button style={secondaryButton} disabled={isMaster} onClick={() => updateDesktopUser(item, { is_active: !item.is_active })}>{item.is_active ? 'Disable' : 'Enable'}</button></td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
                 )}
               </Panel>
             </div>
