@@ -29,6 +29,9 @@ export default function LoginPage() {
           <section style={{ ...card, minHeight: 480, background: '#3a1552' }}>
             <SignIn routing='path' path='/login' signUpUrl='/register' afterSignInUrl='/dashboard' afterSignUpUrl='/register' appearance={clerkAppearance} />
           </section>
+          <p style={{ margin: '14px 4px 0', fontSize: 13, color: 'var(--text-muted)' }}>
+            Forgot your dashboard password? <a href='/forgot-password' style={{ color: 'var(--balance-pink)', fontWeight: 600 }}>Reset it by email</a>.
+          </p>
           {router.query.invite_token ? (
             <div style={{ marginTop: 16, padding: 14, border: '1px solid var(--panel-border)', borderRadius: 12, background: 'var(--midnight-ink)', fontSize: 12, color: 'var(--text-muted)' }}>
               Invite token detected. Sign in with the invited email, then continue to registration for invite acceptance.
