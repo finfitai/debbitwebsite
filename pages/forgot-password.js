@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
           {step !== 'complete' ? <p style={{ margin: '20px 0 0', fontSize: 13 }}><Link href="/login" style={{ color: 'var(--balance-pink)' }}>Back to sign in</Link></p> : null}
         </div>
       )}
-      <p style={{ marginTop: 16, fontSize: 12, lineHeight: 1.5, color: 'var(--text-muted)' }}>This resets your dashboard sign-in password. Your separate Debbit Desktop password is managed from the desktop app account setup.</p>
+      <p style={{ marginTop: 16, fontSize: 12, lineHeight: 1.5, color: 'var(--text-muted)' }}>This resets your dashboard Clerk password only. Debbit Desktop sign-in and its optional device passcode are separate; use the recovery option inside the desktop app to reset or remove that passcode.</p>
     </AuthShell>
   )
 }
