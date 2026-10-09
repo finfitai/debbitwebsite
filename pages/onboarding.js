@@ -24,16 +24,17 @@ function countryOption(code) {
 const PINNED_COUNTRIES = PINNED_COUNTRY_CODES.map(countryOption)
 const OTHER_COUNTRIES = ALL_195_COUNTRIES.filter(c => !PINNED_COUNTRY_CODES.includes(c.code))
 
-// Labels/taglines mirror apps/desktop/profiles/*.json exactly (restaurant,
-// wholesale, retail, manufacturing, services) — what you pick here is what
-// actually changes in the desktop app's nav and chart of accounts the first
-// time you sign in there (see ipc/staffAccounts.js's bootstrapBusiness).
+// Match the vertical profiles shipped by debbit OS. `dbType` remains one of
+// the five values accepted by the legacy businesses.business_type enum;
+// `profile` is the precise vertical the desktop loads on first sign-in.
 const BUSINESS_TYPE_OPTIONS = [
-  { value: 'RETAIL', label: 'Retail / Shop', tagline: 'Sell products over the counter' },
-  { value: 'FOOD_BEVERAGE', label: 'Restaurant / Café', tagline: 'Menu items, ingredients, fast orders' },
-  { value: 'WHOLESALE', label: 'Wholesale / Distribution', tagline: 'Bulk sell-in to other businesses, EDI, pick & pack' },
-  { value: 'MANUFACTURING', label: 'Light Manufacturing', tagline: 'Build products from raw materials (BOM)' },
-  { value: 'SERVICE', label: 'Services / Professional', tagline: 'Bill for time and services, no stock' },
+  { value: 'CONSTRUCTION', dbType: 'SERVICE', profile: 'construction', label: 'Construction', tagline: 'Projects, subcontractors, progress billing, retention' },
+  { value: 'WHOLESALE', dbType: 'WHOLESALE', profile: 'wholesale', label: 'Wholesale / Distribution', tagline: 'Bulk sell-in to other businesses, EDI, pick & pack' },
+  { value: 'RETAIL', dbType: 'RETAIL', profile: 'retail', label: 'Retail / Shop', tagline: 'Sell products over the counter' },
+  { value: 'FOOD_BEVERAGE', dbType: 'FOOD_BEVERAGE', profile: 'restaurant', label: 'Restaurant / Café', tagline: 'Menu items, ingredients, fast orders' },
+  { value: 'LOGISTICS', dbType: 'SERVICE', profile: 'logistics', label: 'Logistics / Transport', tagline: 'Trips, vehicles, drivers, freight and shipments' },
+  { value: 'MANUFACTURING', dbType: 'MANUFACTURING', profile: 'manufacturing', label: 'Light Manufacturing', tagline: 'Build products from raw materials (BOM)' },
+  { value: 'SERVICE', dbType: 'SERVICE', profile: 'services', label: 'Services / Professional', tagline: 'Bill for time and services, no stock' },
 ]
 
 function getDraftDefaults() {
@@ -63,6 +64,8 @@ const WEBSITE_INDUSTRY_TO_BUSINESS_TYPE = {
   distribution: 'WHOLESALE',
   services: 'SERVICE',
   manufacturing: 'MANUFACTURING',
+  construction: 'CONSTRUCTION',
+  logistics: 'LOGISTICS',
 }
 
 const STEP_LABELS = ['Business', 'Desktop login', 'Done']
@@ -200,7 +203,7 @@ export default function OnboardingPage() {
         p_country: form.country,
         p_currency: form.currency,
         p_tax_regime: form.taxRegime,
-        p_business_type: form.businessType,
+        p_business_type: selectedBusinessType.dbType,
         p_full_name: form.fullName.trim(),
         // Fallback for when Clerk's session token doesn't carry an email claim
         // (requires a dashboard "Customize session token" change the SQL side
@@ -211,6 +214,17 @@ export default function OnboardingPage() {
       if (error) {
         setMessage(error.message)
         return
+      }
+
+      // The cloud business_type enum only distinguishes broad types. Save
+      // the selected profile separately so SERVICE-backed verticals such as
+      // Construction and Logistics don't reopen on desktop as generic Services.
+      if (selectedBusinessType.profile) {
+        const { error: profileError } = await clerkSupabase.rpc('set_business_industry_profile', {
+          p_business_id: businessId,
+          p_industry_profile: selectedBusinessType.profile,
+        })
+        if (profileError) console.warn('[onboarding] could not save the industry profile:', profileError.message)
       }
 
       const token = await getToken()

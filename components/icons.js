@@ -59,12 +59,33 @@ export function ServiceIcon(props) {
   )
 }
 
+export function ConstructionIcon(props) {
+  return (
+    <svg viewBox="0 0 48 48" width={props.size || 28} height={props.size || 28} {...base}>
+      <path d="M7 41h34M11 41V22l13-9 13 9v19" />
+      <path d="M19 41V29h10v12M18 22h.01M30 22h.01" />
+      <path d="M19 12a5 5 0 0 1 10 0v3H19v-3ZM17 15h14" />
+    </svg>
+  )
+}
+
+export function LogisticsIcon(props) {
+  return (
+    <svg viewBox="0 0 48 48" width={props.size || 28} height={props.size || 28} {...base}>
+      <path d="M5 12h23v22H5zM28 20h8l7 8v6H28z" />
+      <path d="M35 20v8h8M12 38a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM36 38a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+    </svg>
+  )
+}
+
 export const BUSINESS_TYPE_ICONS = {
   RETAIL: RetailIcon,
   FOOD_BEVERAGE: FoodBeverageIcon,
   WHOLESALE: WholesaleIcon,
   MANUFACTURING: ManufacturingIcon,
   SERVICE: ServiceIcon,
+  CONSTRUCTION: ConstructionIcon,
+  LOGISTICS: LogisticsIcon,
 }
 
 export function CheckBadgeIcon(props) {
