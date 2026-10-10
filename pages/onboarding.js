@@ -6,6 +6,7 @@ import { EqualsMark } from '../components/ui'
 import { BUSINESS_TYPE_ICONS, CheckBadgeIcon, LockKeyIcon, RocketIcon } from '../components/icons'
 import { BrandLoader } from '../components/Protected'
 import { ALL_195_COUNTRIES, getCountryConfig } from '../lib/countries'
+import PasswordField from '../components/PasswordField'
 
 const card = { background: 'var(--panel)', border: '1px solid var(--panel-border)', borderRadius: 14, padding: 26 }
 
@@ -393,9 +394,9 @@ export default function OnboardingPage() {
                       <div><b style={{ color: 'var(--paper-white)' }}>Trial:</b> 1-month full access, starts the moment setup completes.</div>
                       <div><b style={{ color: 'var(--paper-white)' }}>Desktop login:</b> the password below — debbit OS signs in with it, not Google/email.</div>
                     </div>
-                    <input style={input} type='password' placeholder='Desktop password (min 8 characters)' value={desktopPw.pw}
+                    <PasswordField style={input} placeholder='Desktop password (min 8 characters)' value={desktopPw.pw}
                       onChange={e => setDesktopPw(current => ({ ...current, pw: e.target.value }))} autoFocus />
-                    <input style={{ ...input, marginTop: 10 }} type='password' placeholder='Confirm desktop password' value={desktopPw.confirm}
+                    <PasswordField style={{ ...input, marginTop: 10 }} placeholder='Confirm desktop password' value={desktopPw.confirm}
                       onChange={e => setDesktopPw(current => ({ ...current, confirm: e.target.value }))}
                       onKeyDown={e => { if (e.key === 'Enter') completeSignup() }} />
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
