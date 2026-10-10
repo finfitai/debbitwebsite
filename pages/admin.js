@@ -3,6 +3,7 @@ import AppShell from '../components/AppShell'
 import { clerkEnabled, clerkOrFallbackMessage, useAuth, useUser } from '../lib/clerk'
 import { hasSupabaseConfig, supabaseAnonKey, supabaseUrl, useClerkSupabaseClient } from '../lib/supabase'
 import { Panel, StatCard, input, miniInput, primaryButton, secondaryButton } from '../components/ui'
+import PasswordField from '../components/PasswordField'
 
 // These are the roles accepted by staff_accounts and the Debbit Desktop login.
 const DESKTOP_ROLE_OPTIONS = ['MASTER', 'SALES', 'POS', 'PURCHASE', 'INVENTORY', 'HR', 'ACCOUNTANT']
@@ -217,7 +218,7 @@ export default function AdminPage() {
                   </select>
                   <input style={input} placeholder='Employee full name' value={fullName} onChange={e => setFullName(e.target.value)} />
                   <input style={input} type='email' placeholder='staff@business.com' value={email} onChange={e => setEmail(e.target.value)} />
-                  <input style={input} type='password' autoComplete='new-password' placeholder='Temporary password (8+ characters for a new user)' value={password} onChange={e => setPassword(e.target.value)} />
+                  <PasswordField style={input} autoComplete='new-password' placeholder='Temporary password (8+ characters for a new user)' value={password} onChange={e => setPassword(e.target.value)} />
                   <select value={role} onChange={e => setRole(e.target.value)} style={input}>
                     {DESKTOP_ROLE_OPTIONS.map(item => <option key={item} value={item}>{item}</option>)}
                   </select>
