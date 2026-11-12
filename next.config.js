@@ -1,7 +1,7 @@
 module.exports = {
-  // The marketing homepage (public/index.html — a self-contained Artifact-style
-  // bundle: React+Babel-standalone loaded at runtime, no build step of its own)
-  // is served at '/' via this rewrite rather than a page, since the dashboard
+  // The marketing homepage (public/index.html, with its scripts, styles,
+  // translations and logos in public/site and public/brand; plain static files,
+  // no build step of its own) is served at '/' via this rewrite rather than a page, since the dashboard
   // app's own pages need the real Next.js router for everything else.
   async rewrites() {
     return [
@@ -43,18 +43,17 @@ module.exports = {
           },
         ],
       },
-      // '/' only: the marketing bundle needs unsafe-eval (runtime Babel) and a
-      // wide script-src (unpkg.com for React, app.cal.com for the demo-booking
-      // embed). This entry is declared AFTER the catch-all on purpose — Next.js
-      // resolves a header key from the LAST matching rule, so '/' ends up with
-      // this permissive policy while every other route keeps the strict one
-      // above. Do not reorder this without keeping that in mind.
+      // '/' only: the homepage (public/index.html + public/site/*) loads its own
+      // scripts from 'self', Google Fonts, and the cal.com booking popup. No
+      // unsafe-eval and no inline scripts. Declared AFTER the catch-all on
+      // purpose: Next.js resolves a header key from the LAST matching rule, so
+      // '/' gets this policy while every other route keeps the strict one above.
       {
         source: '/',
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' blob:; worker-src blob: *; frame-src blob: *;",
+            value: "default-src 'self'; script-src 'self' https://app.cal.com https://cal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://app.cal.com; font-src 'self' https://fonts.gstatic.com https://app.cal.com https://cal.com; img-src 'self' data: blob: https:; connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com; frame-src https://app.cal.com https://cal.com; worker-src 'self' blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
           },
         ],
       },
