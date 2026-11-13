@@ -3,398 +3,354 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>debbit: run, grow and build your business</title>
-<meta name="description" content="debbitGO, debbitPro, debbitX and debbitNext: the till, the whole business system, consulting with Big 4 thinking, and AI that builds a business. Ready for sale in 58 countries.">
-<meta name="theme-color" content="#04010A">
+<title>debbit: control today, grow tomorrow</title>
+<meta name="description" content="debbit is the financial operating system that runs your entire business from one platform. debbitGO, debbitPro, debbitX and debbitNext, ready for sale in 58 countries.">
+<meta name="theme-color" content="#0b0912">
 <meta property="og:type" content="website">
-<meta property="og:title" content="debbit: run, grow and build your business">
-<meta property="og:description" content="Four ways to build a business: debbitGO, debbitPro, debbitX and debbitNext. Ready for sale in 58 countries.">
+<meta property="og:title" content="debbit: control today, grow tomorrow">
+<meta property="og:description" content="The financial operating system that runs your entire business from one platform: debbitGO, debbitPro, debbitX and debbitNext.">
 <meta property="og:url" content="https://www.debbit.org/">
 <meta property="og:image" content="https://www.debbit.org/brand/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/brand/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;900&family=Figtree:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;600&family=Noto+Kufi+Arabic:wght@700&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site/site.css">
-<script src="/site/three.min.js" defer></script>
-<script src="/site/i18n-data.js" defer></script>
-<script src="/site/app.js" defer></script>
-<script src="/site/i18n.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Naskh+Arabic:wght@500&family=Noto+Sans+Arabic:wght@400;500&family=Noto+Serif+Thai:wght@400&family=Noto+Sans+Thai:wght@400;500&family=Noto+Serif+SC:wght@500&family=Noto+Sans+SC:wght@400;500&family=Noto+Serif:ital@0;1&family=Be+Vietnam+Pro:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site/home.css">
+<script src="/site/home.js" defer></script>
 <script src="/site/booking.js" defer></script>
 </head>
 <body>
-<noscript><p style="padding:24px;color:#F4EEFF">debbit works best with JavaScript turned on.</p></noscript>
-<section class="universe" id="universe">
-<canvas id="gl" aria-label="The debbit universe: debbit's core with four product worlds in orbit"></canvas>
+<noscript><p style="padding:24px">debbit works best with JavaScript turned on.</p></noscript>
+<canvas id="silk" aria-hidden="true"></canvas>
 
-<section class="intro" id="intro">
-  <div class="intro-lang"><label class="pill lang"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg><select class="langsel" aria-label="Language"></select></label></div>
-  <div>
-    <h1><span class="lg lg-debbit dw" role="img" aria-label="debbit"></span></h1>
-    <p>Four worlds, one universe: <i class="lg lg-go in" role="img" aria-label="debbitGO"></i>, <i class="lg lg-pro in" role="img" aria-label="debbitPro"></i>, <i class="lg lg-x in" role="img" aria-label="debbitX"></i> and <i class="lg lg-next in" role="img" aria-label="debbitNext"></i>. Fly between them and try each one.</p>
-    <div class="enter">
-      <button class="btn btn-glow" id="enter" type="button">Enter the universe</button>
-      <button class="btn btn-ghost" id="enter-sound" type="button">Enter with sound</button>
-    </div>
+<div class="uni" id="uni" role="dialog" aria-modal="true" aria-label="The debbit universe" hidden>
+  <canvas id="uniCv" aria-hidden="true"></canvas>
+  <div class="uni-wash" id="uniWash"></div>
+  <div class="uni-top">
+    <i class="lg lg-debbit" role="img" aria-label="debbit"></i>
+    <p class="uni-hint">Drag to look around. Click a world to fly there.</p>
+    <button class="btn btn-sm" type="button" id="uniList">See them as a list</button>
+    <button class="btn btn-sm uni-x" type="button" id="uniClose" aria-label="Close"><span aria-hidden="true" translate="no">✕</span></button>
   </div>
-</section>
-
-<div class="hud hud-top">
-  <a class="logo" href="#" id="home"><span class="lg lg-debbit dw" role="img" aria-label="debbit"></span></a>
-  <span class="where" id="where">Drag to look around. Click a world to fly there.</span>
-  <span class="grow"></span>
-  <label class="pill lang"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg><select class="langsel" aria-label="Language"></select></label>
-  <button class="pill" id="sound" type="button" aria-pressed="false">Sound off</button>
-  <a class="pill" href="/login">Sign in</a>
+  <button class="uni-tag" type="button" style="--c:var(--go)"><i class="lg lg-go" role="img" aria-label="debbitGO"></i><span>Till and back office</span></button>
+  <button class="uni-tag" type="button" style="--c:var(--pro)"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i><span>For whole teams</span></button>
+  <button class="uni-tag" type="button" style="--c:var(--x)"><i class="lg lg-x" role="img" aria-label="debbitX"></i><span>Consulting</span></button>
+  <button class="uni-tag" type="button" style="--c:var(--next)"><i class="lg lg-next" role="img" aria-label="debbitNext"></i><span>Build a business with AI</span></button>
 </div>
 
-<nav class="hud worlds" aria-label="Worlds">
-  <button class="go" data-w="0" type="button"><b>1</b><i class="lg lg-go" role="img" aria-label="debbitGO"></i></button>
-  <button class="pro" data-w="1" type="button"><b>2</b><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></button>
-  <button class="x" data-w="2" type="button"><b>3</b><i class="lg lg-x" role="img" aria-label="debbitX"></i></button>
-  <button class="nx" data-w="3" type="button"><b>4</b><i class="lg lg-next" role="img" aria-label="debbitNext"></i></button>
-</nav>
-
-<p class="hud hint">Drag to turn the universe. Keys 1 to 4 fly to a world. Esc comes back.</p>
-
-<div class="hud ask">
-  <form id="askForm">
-    <label for="askIn">Describe a business you want to build</label>
-    <input id="askIn" autocomplete="off" placeholder="Describe a business you want to build…">
-    <button class="btn btn-glow" type="submit">Build it</button>
-  </form>
-</div>
-
-<div class="tag go" data-t="0"><b><i class="lg lg-go" role="img" aria-label="debbitGO"></i></b><span>Till and back office</span></div>
-<div class="tag pro" data-t="1"><b><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></b><span>For whole teams</span></div>
-<div class="tag x" data-t="2"><b><i class="lg lg-x" role="img" aria-label="debbitX"></i></b><span>Consulting</span></div>
-<div class="tag nx" data-t="3"><b><i class="lg lg-next" role="img" aria-label="debbitNext"></i></b><span>Build a business with AI</span></div>
-
-<!-- debbitGO -->
-<aside class="panel go" id="p0" aria-label="debbitGO">
-  <button class="back" type="button" aria-label="Back to the universe">✕</button>
-  <span class="kick">For small shops, cafés and stalls</span>
-  <span class="pname"><i class="lg lg-gofull" role="img" aria-label="debbitGO"></i></span>
-  <p class="say">The till and the back office, in one app.</p>
-  <p class="d">Ring up a sale below. Watch the ring light up as the sale lands in stock, the books and tax at the same moment.</p>
-  <div class="till">
-    <div><small>Sold today</small><b class="num" id="goSales">RM 0.00</b></div>
-    <div><small>Tax set aside</small><b class="num" id="goTax">RM 0.00</b></div>
-    <div><small>Cups left</small><b class="num" id="goStock">120</b></div>
-  </div>
-  <button class="ring" id="ring" type="button">Ring up a sale</button>
-  <div class="rcpt" id="rcpt"></div>
-  <p class="note">Example café with made-up prices. Tax shown at 6% service tax.</p>
-  <div class="cta"><a class="btn btn-c" href="#">Start free</a></div>
-</aside>
-
-<!-- debbitPro -->
-<aside class="panel pro" id="p1" aria-label="debbitPro">
-  <button class="back" type="button" aria-label="Back to the universe">✕</button>
-  <span class="kick">For medium and large businesses</span>
-  <span class="pname"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></span>
-  <p class="say">One system for the whole team. Everyone sees exactly what their job needs.</p>
-  <p class="d">Pick a role. The floors of the building that light up are the parts of the business that person can reach.</p>
-  <div class="seg" role="group" aria-label="Role">
-    <button type="button" data-r="0" aria-pressed="true">Owner</button>
-    <button type="button" data-r="1" aria-pressed="false">Accountant</button>
-    <button type="button" data-r="2" aria-pressed="false">Manager</button>
-    <button type="button" data-r="3" aria-pressed="false">Cashier</button>
-  </div>
-  <ul class="sees" id="sees"></ul>
-  <div class="cta"><a class="btn btn-c" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-namespace="30min" data-cal-link="debbitmy/30min" data-cal-config='{"layout":"month_view"}'>Book a demo</a></div>
-</aside>
-
-<!-- debbitX -->
-<aside class="panel x" id="p2" aria-label="debbitX">
-  <button class="back" type="button" aria-label="Back to the universe">✕</button>
-  <span class="kick">Consulting</span>
-  <span class="pname"><i class="lg lg-x" role="img" aria-label="debbitX"></i></span>
-  <p class="say">Big 4 thinking, without the Big 4 invoice.</p>
-  <p class="d">Our consultants come from the world's largest firms. They pair that experience with <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span>'s own tools, so advice turns into results you can see in your numbers.</p>
-  <div class="xsteps" id="xsteps">
-    <button type="button" aria-expanded="true" data-s="0"><i>1</i><span style="max-height:none;color:inherit;font-size:inherit"><b>Look closely</b></span><span>We sit with your team and map how money, stock and work really move.</span></button>
-    <button type="button" aria-expanded="false" data-s="1"><i>2</i><span style="max-height:none;color:inherit;font-size:inherit"><b>Fix what slows you down</b></span><span>Clear steps, the right controls and fewer hand-offs.</span></button>
-    <button type="button" aria-expanded="false" data-s="2"><i>3</i><span style="max-height:none;color:inherit;font-size:inherit"><b>Put it to work</b></span><span>Set up <i class="lg lg-pro in" role="img" aria-label="debbitPro"></i> or your own systems, and train your people.</span></button>
-  </div>
-  <div class="cta"><a class="btn btn-c" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-namespace="30min" data-cal-link="debbitmy/30min" data-cal-config='{"layout":"month_view"}'>Book a call with a consultant</a></div>
-</aside>
-
-<!-- debbitNext -->
-<aside class="panel nx" id="p3" aria-label="debbitNext">
-  <button class="back" type="button" aria-label="Back to the universe">✕</button>
-  <span class="kick">For anyone with an idea</span>
-  <span class="pname"><i class="lg lg-next" role="img" aria-label="debbitNext"></i><span class="soon">Coming soon</span></span>
-  <p class="say">You ask AI for a picture. Now ask it for a business.</p>
-  <form class="nform" id="nForm">
-    <label for="nIn" class="ask" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your business idea</label>
-    <input id="nIn" autocomplete="off" placeholder="A kopitiam in Bangsar for 6 staff">
-    <button class="btn btn-c" type="submit">Build it</button>
-  </form>
-  <div class="chips" id="chips">
-    <button type="button">A kopitiam in Bangsar</button>
-    <button type="button">An online batik shop</button>
-    <button type="button">A phone repair kiosk</button>
-    <button type="button">A delivery company in Riyadh</button>
-  </div>
-  <p class="bp-head" id="bpHead">Type an idea, or pick one above, and watch the galaxy turn into a city.</p>
-  <div class="bp" id="bp">
-    <div class="wait"><i>Plan</i><b>Your one-page plan</b><span>Who it serves, what it costs to open, when it pays back.</span></div>
-    <div class="wait"><i>Products</i><b>What you'll sell</b><span>A starting list, priced from your costs.</span></div>
-    <div class="wait"><i>Till</i><b><i class="lg lg-go in" role="img" aria-label="debbitGO"></i>, set up</b><span>Your products, ready for the first sale.</span></div>
-    <div class="wait"><i>Books</i><b>Accounts and tax</b><span>For your country, from day one.</span></div>
-    <div class="wait"><i>Team</i><b>Roles and shifts</b><span>Who you need, rotas and payroll.</span></div>
-    <div class="wait"><i>Launch</i><b>Opening checklist</b><span>Licences, suppliers and first-week tasks.</span></div>
-  </div>
-  <p class="note">A preview of <i class="lg lg-next in" role="img" aria-label="debbitNext"></i>. Nothing is created yet.</p>
-  <div class="cta"><a class="btn btn-c" href="#">Join the waitlist</a></div>
-</aside>
-<a class="scroll-cue" href="#products">Scroll for the details<i></i></a>
-</section>
-
-<header class="site-nav" id="siteNav">
+<header class="top">
   <div class="wrap">
-    <a class="logo" href="#universe"><span class="lg lg-debbit dw" role="img" aria-label="debbit"></span></a>
-    <ul>
-      <li><a href="#products">Products</a></li>
-      <li><a href="#compare">Compare</a></li>
-      <li><a href="#countries">Countries</a></li>
-      <li><a href="#faq">FAQ</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <span class="grow"></span>
-    <label class="pill lang"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg><select class="langsel" aria-label="Language"></select></label>
-    <a class="btn btn-glow" href="#contact">Get started</a>
+    <a class="home" href="#top" aria-label="debbit, back to the top"><i class="lg lg-debbit"></i></a>
+    <nav aria-label="Sections">
+      <a href="#products">Products</a>
+      <a href="#words">Plain words</a>
+      <a href="#questions">Questions</a>
+      <a href="#countries">Countries</a>
+    </nav>
+    <div class="acts">
+      <select class="langsel" id="lang" aria-label="Language"><option value="en">English</option></select>
+      <a class="btn btn-sm signin" href="/login">Sign in</a>
+      <a class="btn btn-sm btn-solid" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-link="debbitmy/30min">Book a call</a>
+    </div>
   </div>
 </header>
 
-<div class="below">
-<section class="sec" id="products">
-  <div class="wrap">
-    <h2>Choose your <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span>.</h2>
-    <p class="intro-p">Four products for four stages of a business. Pick one to see what it does, who it's for and how to start.</p>
-
-    <div class="chooser" role="tablist" aria-label="Products">
-      <button class="go" role="tab" aria-selected="true" data-p="0" type="button"><span class="nm"><i class="lg lg-go" role="img" aria-label="debbitGO"></i></span><small>Small shops, cafés, stalls</small></button>
-      <button class="pro" role="tab" aria-selected="false" data-p="1" type="button"><span class="nm"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></span><small>Growing and larger companies</small></button>
-      <button class="x" role="tab" aria-selected="false" data-p="2" type="button"><span class="nm"><i class="lg lg-x" role="img" aria-label="debbitX"></i></span><small>Consulting</small></button>
-      <button class="nx" role="tab" aria-selected="false" data-p="3" type="button"><span class="nm"><i class="lg lg-next" role="img" aria-label="debbitNext"></i></span><small>Build a business with AI</small></button>
-    </div>
-
-    <!-- debbitGO -->
-    <div class="pdetail go on" role="tabpanel" data-pd="0">
-      <div class="ov">
-        <div>
-          <span class="plogo"><i class="lg lg-gofull" role="img" aria-label="debbitGO"></i></span><h3>The till and back office for small businesses.</h3>
-          <p>Sell at the counter, keep your stock right, pay suppliers and see what you made today, all in one app. It's built for owners who run the shop themselves and don't want to learn accounting software.</p>
-        </div>
-        <dl class="facts">
-          <div><dt>Best for</dt><dd>Shops, cafés, restaurants, stalls and service counters</dd></div>
-          <div><dt>Team size</dt><dd>The owner and a few staff</dd></div>
-          <div><dt>Runs on</dt><dd>A computer at the counter, with your figures online for you</dd></div>
-          <div><dt>Getting started</dt><dd>Free first month, set up the same day</dd></div>
-        </dl>
-      </div>
-      <div class="feat">
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><b>Point of sale</b><span>Fast checkout with cash, card and QR, and printed or digital receipts.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg><b>Stock</b><span>Stock goes down as you sell and up as goods arrive, with barcodes.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><b>Suppliers and bills</b><span>Record what you buy and what you owe, and pay on time.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/></svg><b>Today's numbers</b><span>Sales, costs and profit for the day, the week and the month.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0M17 11a3 3 0 100-6M21 20a5 5 0 00-4-5"/></svg><b>Staff and shifts</b><span>Each person signs in to the till, and you see who sold what.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg><b>Your data, yours</b><span>Export your sales and stock whenever you like.</span></div>
-      </div>
-      <ol class="flow">
-        <li><b>Tell us about your shop</b><span>Name, country and what you sell.</span></li>
-        <li><b>Add your products</b><span>Type them in, or bring a spreadsheet.</span></li>
-        <li><b>Make your first sale</b><span>Your stock and numbers keep themselves from then on.</span></li>
-      </ol>
-      <div class="pcta"><a class="btn btn-glow" href="#contact" data-prod="debbitGO">Start free</a><span class="note">No card needed for the first month.</span></div>
-    </div>
-
-    <!-- debbitPro -->
-    <div class="pdetail pro" role="tabpanel" data-pd="1">
-      <div class="ov">
-        <div>
-          <span class="plogo"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></span><h3>Runs the whole company, with a login for everyone.</h3>
-          <p>One system for sales, buying, stock, accounts, tax and payroll. Each person signs in with their own login and sees only what their job needs, while owners approve what matters. Built for businesses with teams, branches and an accountant.</p>
-        </div>
-        <dl class="facts">
-          <div><dt>Best for</dt><dd>Medium and large businesses, distributors, multi-branch retail</dd></div>
-          <div><dt>Team size</dt><dd>From a handful of staff to whole departments</dd></div>
-          <div><dt>Runs on</dt><dd>Online, in the browser, on any computer or phone</dd></div>
-          <div><dt>Getting started</dt><dd>A demo, then guided setup with our team</dd></div>
-        </dl>
-      </div>
-      <div class="feat">
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg><b>Logins and roles</b><span>Owner, accountant, manager, cashier: everyone sees their part.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12l4 4 10-10"/></svg><b>Approvals</b><span>Big purchases and payments wait for the right person to say yes.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h12a4 4 0 014 4v12H8a4 4 0 01-4-4V4z"/><path d="M8 9h8M8 13h6"/></svg><b>Full accounts</b><span>Profit and loss, balance sheet and every record behind them.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></svg><b>Tax and e-invoices</b><span>Tax worked out on every sale and ready for your returns. E-invoices go out through ZATCA in Saudi Arabia and MyInvois in Malaysia.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg><b>Payroll</b><span>Payslips and staff costs, linked straight to the accounts.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg><b>Branches and stock</b><span>Stock across locations, transfers, returns and purchase orders.</span></div>
-      </div>
-      <ol class="flow">
-        <li><b>See it working</b><span>A demo with your kind of business.</span></li>
-        <li><b>Bring your records</b><span>We help move your products, customers and balances in.</span></li>
-        <li><b>Go live with your team</b><span>Logins, roles and training for each person.</span></li>
-      </ol>
-      <div class="pcta"><a class="btn btn-glow" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-namespace="30min" data-cal-link="debbitmy/30min" data-cal-config='{"layout":"month_view"}'>Book a demo</a><a class="btn btn-ghost" href="#contact" data-prod="debbitPro">Send us a message</a></div>
-    </div>
-
-    <!-- debbitX -->
-    <div class="pdetail x" role="tabpanel" data-pd="2">
-      <div class="ov">
-        <div>
-          <span class="plogo"><i class="lg lg-x" role="img" aria-label="debbitX"></i></span><h3>Big 4 thinking, without the Big 4 invoice.</h3>
-          <p>Our consultants come from the world's largest firms. They work alongside your team to find what slows you down, fix the way money, stock and work move, and put the right systems in place, on <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> or on what you already use.</p>
-        </div>
-        <dl class="facts">
-          <div><dt>Best for</dt><dd>Owners and leadership teams ready to change how they work</dd></div>
-          <div><dt>Typical work</dt><dd>Process reviews, finance and controls, systems, AI readiness</dd></div>
-          <div><dt>How we work</dt><dd>On site or remote, alongside your people</dd></div>
-          <div><dt>Getting started</dt><dd>A first conversation about where it hurts</dd></div>
-        </dl>
-      </div>
-      <div class="feat">
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><b>Process review</b><span>A clear map of how work really moves today.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/></svg><b>Finance and controls</b><span>Month-end, cash, approvals and the checks that prevent mistakes.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg><b>Systems</b><span>Choosing, setting up and joining the tools you run on.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2"/><circle cx="12" cy="12" r="3"/></svg><b>AI readiness</b><span>Where AI can save time in your business, and where it shouldn't be used.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0"/></svg><b>Training</b><span>Your people learn the new way of working, not just the software.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12l4 4 10-10"/></svg><b>Results you can see</b><span>Changes measured in your own numbers.</span></div>
-      </div>
-      <ol class="flow">
-        <li><b>Look closely</b><span>We map how money, stock and work really move.</span></li>
-        <li><b>Fix what slows you down</b><span>Clear steps, the right controls, fewer hand-offs.</span></li>
-        <li><b>Put it to work</b><span>Set up the systems and train your people.</span></li>
-      </ol>
-      <div class="pcta"><a class="btn btn-glow" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-namespace="30min" data-cal-link="debbitmy/30min" data-cal-config='{"layout":"month_view"}'>Book a call with a consultant</a><a class="btn btn-ghost" href="#contact" data-prod="debbitX">Send us a message</a></div>
-    </div>
-
-    <!-- debbitNext -->
-    <div class="pdetail nx" role="tabpanel" data-pd="3">
-      <div class="ov">
-        <div>
-          <span class="plogo"><i class="lg lg-next" role="img" aria-label="debbitNext"></i></span><h3>Turns an idea into a business. <span class="badge">Coming soon</span></h3>
-          <p>You already ask AI to make pictures and videos. <i class="lg lg-next in" role="img" aria-label="debbitNext"></i> is our plan to do the same for a whole business: describe what you want to build, and it prepares the plan, the products and prices, the till, the books and the team, ready for you to check and open.</p>
-        </div>
-        <dl class="facts">
-          <div><dt>Best for</dt><dd>First-time founders and owners opening a new line or branch</dd></div>
-          <div><dt>What you give it</dt><dd>A description of the business, in your own words</dd></div>
-          <div><dt>What you get</dt><dd>A plan and a <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> set up for it, for you to review</dd></div>
-          <div><dt>Status</dt><dd>In development. Join the waitlist to hear first.</dd></div>
-        </dl>
-      </div>
-      <div class="feat">
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6"/></svg><b>The plan</b><span>Who it serves, what it costs to open and when it pays back.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg><b>Products and prices</b><span>A starting list, priced from your costs.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg><b>A ready till</b><span><i class="lg lg-go in" role="img" aria-label="debbitGO"></i> or <i class="lg lg-pro in" role="img" aria-label="debbitPro"></i>, set up with what you sell.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h12a4 4 0 014 4v12H8a4 4 0 01-4-4V4z"/></svg><b>Books from day one</b><span>Accounts and tax settings for your country.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0"/></svg><b>Your team</b><span>The roles you need, rotas and payroll.</span></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12l4 4 10-10"/></svg><b>You stay in charge</b><span>Nothing goes live until you've checked it.</span></div>
-      </div>
-      <div class="pcta"><a class="btn btn-glow" href="#contact" data-prod="debbitNext">Join the waitlist</a><a class="btn btn-ghost" href="#universe" id="tryNext">Try the preview above</a></div>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="compare">
-  <div class="wrap">
-    <h2>Which <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> is right for you?</h2>
-    <div class="cmpwrap">
-      <table class="cmp">
-        <thead><tr><th></th><th class="go"><i class="lg lg-go" role="img" aria-label="debbitGO"></i></th><th class="pro"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></th><th class="x"><i class="lg lg-x" role="img" aria-label="debbitX"></i></th><th class="nx"><i class="lg lg-next" role="img" aria-label="debbitNext"></i></th></tr></thead>
-        <tbody>
-          <tr><th>What it is</th><td>Till and back office app</td><td>Full business system</td><td>Consulting service</td><td>AI that builds a business</td></tr>
-          <tr><th>Best for</th><td>Small shops and cafés</td><td>Medium and large companies</td><td>Leaders ready to change</td><td>New founders and new branches</td></tr>
-          <tr><th>People</th><td>Owner and a few staff</td><td>Many logins with roles</td><td>Your leadership team</td><td>You, to start</td></tr>
-          <tr><th>Accounts and tax</th><td>Daily numbers and records</td><td>Full accounts, tax, e-invoices, payroll</td><td>Reviewed and improved</td><td>Set up for you</td></tr>
-          <tr><th>How to start</th><td>Free first month</td><td>Book a demo</td><td>First conversation</td><td>Join the waitlist</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="countries">
-  <div class="wrap">
-    <h2>Where <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> helps businesses grow.</h2>
-    <p class="intro-p"><span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> is ready for sale in all 58 of these countries. Drag the globe, or search the list.</p>
-    <div class="wgrid">
-      <div class="globe-box"><canvas id="globe" aria-label="Globe showing the 58 countries where debbit is sold"></canvas><div class="globe-tip" id="gtip">Drag to turn the globe</div></div>
-      <div>
-        <div class="count num" id="ccount">58</div>
-        <p style="color:var(--haze);margin-top:6px">countries across five regions, ready for sale today</p>
-        <div class="csearch"><label for="cq" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search countries</label><input id="cq" placeholder="Search a country" autocomplete="off"></div>
-        <div class="regions" id="regions"></div>
-        <ul class="clist" id="clist"></ul>
-        <p class="cfoot">Languages, currencies and local tax settings differ by country. Tell us where you trade and we'll set <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> up for it.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="help">
-  <div class="wrap">
-    <h2>We help you get going.</h2>
-    <p class="intro-p">Every <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> comes with people behind it, not just software.</p>
-    <div class="help">
-      <div><b>Setup with you</b><span>We set up your accounts, tax and products with you, not for you to figure out.</span></div>
-      <div><b>Bring your records</b><span>Move in from spreadsheets or your old system, with a preview before anything is added.</span></div>
-      <div><b>Training</b><span>Short sessions for owners, managers and staff, each on their own part.</span></div>
-      <div><b>Help when you need it</b><span>Ask for help from inside <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> and see the answer there.</span></div>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="faq">
-  <div class="wrap">
-    <h2>Questions people ask us.</h2>
-    <div class="faq">
-      <details open><summary><span>Do I need to know accounting?</span></summary><p>No. You sell, buy and pay people the way you do now, and <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> keeps the records properly in the background. Your accountant can sign in to check them.</p></details>
-      <details><summary><span>What's the difference between <i class="lg lg-go in" role="img" aria-label="debbitGO"></i> and <i class="lg lg-pro in" role="img" aria-label="debbitPro"></i>?</span></summary><p><i class="lg lg-go in" role="img" aria-label="debbitGO"></i> is for small businesses run by the owner with a few staff. <i class="lg lg-pro in" role="img" aria-label="debbitPro"></i> is for companies with teams, many logins, approvals, branches and full accounts and payroll. You can start on one and move up.</p></details>
-      <details><summary><span>Is <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> available in my country?</span></summary><p>Yes, if it's one of the 58 countries above: <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> is ready for sale in all of them. E-invoicing is live with ZATCA in Saudi Arabia and MyInvois in Malaysia. Tell us where you trade and we'll set you up for your country.</p></details>
-      <details><summary><span>Can I bring my existing records?</span></summary><p>Yes. Bring products, customers and suppliers from a spreadsheet or your current system. You see a preview before anything is added.</p></details>
-      <details><summary><span>Who are the <i class="lg lg-x in" role="img" aria-label="debbitX"></i> consultants?</span></summary><p>Consultants who have worked at Big 4 firms. You get the same thinking and methods, priced for growing businesses, working with <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span>'s own tools.</p></details>
-      <details><summary><span>When is <i class="lg lg-next in" role="img" aria-label="debbitNext"></i> available?</span></summary><p><i class="lg lg-next in" role="img" aria-label="debbitNext"></i> is in development. Join the waitlist and you'll hear first when it opens.</p></details>
-      <details><summary><span>Who owns my data?</span></summary><p>You do. You can export your records whenever you like.</p></details>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="contact">
-  <div class="wrap contact">
+<main id="top">
+<div class="hero wrap">
+  <div class="grid">
     <div>
-      <h2>Let's talk about your business.</h2>
-      <p class="intro-p">Tell us a little about what you do and which <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span> you're interested in. We'll come back to you to arrange a demo, a trial or a first conversation.</p>
-      <div class="book"><a class="btn btn-glow" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-namespace="30min" data-cal-link="debbitmy/30min" data-cal-config='{"layout":"month_view"}'>Book a 30-minute call</a><span>Prefer to pick a time yourself? Choose a slot in our calendar.</span></div>
+      <p class="label">Four products · one set of numbers</p>
+      <h1 class="display oil">Control today, <em>grow tomorrow.</em></h1>
+      <p class="lede"><i class="lg lg-debbit" role="img" aria-label="debbit"></i> is the financial operating system that runs your entire business from one platform, to streamline workflows, connect departments, and drive growth across your organization.</p>
+      <p class="lede lede-2">Most businesses stitch together 6–8 separate tools: a POS, an accounting app, an HR system, a tax tracker, a WhatsApp bot, and a spreadsheet holding it all together with prayers. <i class="lg lg-debbit" role="img" aria-label="debbit"></i> replaces all of them.</p>
+      <div class="cta">
+        <a class="btn btn-solid" href="#products" id="openUni">Explore the <i class="lg lg-debbit" role="img" aria-label="debbit"></i> universe</a>
+        <a class="btn" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-link="debbitmy/30min">Book a 30-minute call</a>
+      </div>
+      <p class="trust">Your books and your data are always yours to download.</p>
     </div>
-    <form class="cform" id="cform" novalidate>
-      <label>Your name<input id="cfName" autocomplete="name" required></label>
-      <label>Business name<input id="cfBiz" autocomplete="organization"></label>
-      <label>Email<input id="cfEmail" type="email" autocomplete="email" required></label>
-      <label>Country<select id="cfCountry"></select></label>
-      <label class="full">I'm interested in<select id="cfProd"><option value="debbitGO">debbitGO</option><option value="debbitPro">debbitPro</option><option value="debbitX">debbitX</option><option value="debbitNext waitlist">debbitNext waitlist</option><option value="unsure">Not sure yet</option></select></label>
-      <label class="hp" aria-hidden="true">Website<input id="cfWebsite" name="website" tabindex="-1" autocomplete="off"></label>
-      <label class="full">Anything we should know?<textarea id="cfMsg"></textarea></label>
-      <button class="btn btn-glow" type="submit">Send</button>
-      <p class="msg" id="cfOut" role="status"></p>
-    </form>
+    <div class="eq-anchor" id="eqA" aria-hidden="true"><i></i><i></i></div>
+    <div class="shots">
+      <img class="hshot hshot-a" src="/site/img/hero-dash.webp" width="1400" height="659" alt="The Today screen: sales, revenue, expenses, profit and cash balance on one page" decoding="async">
+      <img class="hshot hshot-b" src="/site/img/hero-ask.webp" width="1364" height="638" alt="The Ask screen: questions such as who owes us money and which products are running low" decoding="async">
+    </div>
+  </div>
+
+  <div class="till" id="till">
+    <div class="till-head">
+      <h2>Try it. Ring up a sale.</h2>
+      <p class="label">One sale · every number moves together</p>
+    </div>
+    <div class="till-body">
+      <div class="shelf" role="group" aria-label="Example till">
+        <p class="label">Tap to sell</p>
+        <button class="item" type="button" data-i="0"><b>Flat white</b><span class="price">12.00</span><span class="left" translate="no">32 left</span></button>
+        <button class="item" type="button" data-i="1"><b>Croissant</b><span class="price">9.00</span><span class="left" translate="no">20 left</span></button>
+        <button class="item" type="button" data-i="2"><b>Iced tea</b><span class="price">7.00</span><span class="left" translate="no">34 left</span></button>
+      </div>
+      <div class="ledger" aria-live="polite">
+        <div class="equation">
+          <div class="term"><span class="label">Money in today</span><output id="mIn" translate="no"><small>RM</small>154.76</output></div>
+          <span class="op" aria-label="equals"><i class="eqmark"></i></span>
+          <div class="term"><span class="label">Sales</span><output id="mSales" translate="no"><small>RM</small>146.00</output></div>
+          <span class="op" aria-hidden="true">+</span>
+          <div class="term"><span class="label">Tax set aside</span><output id="mTax" translate="no"><small>RM</small>8.76</output></div>
+        </div>
+        <ol class="tape" id="tape" aria-label="Latest sales" translate="no">
+          <li><b>Iced tea</b><span>stock 35 → 34</span><span>sales +7.00</span><span>tax +0.42</span></li>
+          <li><b>Flat white</b><span>stock 33 → 32</span><span>sales +12.00</span><span>tax +0.72</span></li>
+          <li><b>Croissant</b><span>stock 21 → 20</span><span>sales +9.00</span><span>tax +0.54</span></li>
+        </ol>
+      </div>
+    </div>
+    <div class="till-foot">
+      <span id="count">14 sales so far today, and the two sides still match.</span>
+      <span>Example café with made-up prices. Tax shown at 6% service tax.</span>
+    </div>
+  </div>
+</div>
+
+<section id="products">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="label"><i class="eqmark"></i><span>Four ways in</span></p>
+      <h2 class="display">Which one sounds like <em>you?</em></h2>
+    </div>
+    <div class="who" role="tablist" aria-label="Choose a product">
+      <button role="tab" type="button" id="t-go" aria-controls="p-go" aria-selected="true" data-p="go" style="--c:var(--go)"><span class="say">I run a small shop, café or stall.</span><i class="lg lg-go" role="img" aria-label="debbitGO"></i></button>
+      <button role="tab" type="button" id="t-pro" aria-controls="p-pro" aria-selected="false" data-p="pro" style="--c:var(--pro)"><span class="say">I run a company with branches and teams.</span><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></button>
+      <button role="tab" type="button" id="t-x" aria-controls="p-x" aria-selected="false" data-p="x" style="--c:var(--x)"><span class="say">I want experts to fix how money moves.</span><i class="lg lg-x" role="img" aria-label="debbitX"></i></button>
+      <button role="tab" type="button" id="t-next" aria-controls="p-next" aria-selected="false" data-p="next" style="--c:var(--next)"><span class="say">I have an idea for a new business.</span><i class="lg lg-next" role="img" aria-label="debbitNext"></i></button>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-go" aria-labelledby="t-go">
+      <div class="copy">
+        <p class="label">For small shops, cafés and stalls</p>
+        <h3>The till and the back office, in one app.</h3>
+        <p>Ring up a sale and <i class="lg lg-go" role="img" aria-label="debbitGO"></i> does the rest. Stock goes down, money goes up, tax is set aside and your books stay right, without you lifting a pen.</p>
+        <div class="go-cta">
+          <a class="btn btn-solid" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-link="debbitmy/30min">Book a call to get started</a>
+        </div>
+        <p class="note">Good for cafés, mini-marts, clothing and gift shops, phone shops, pharmacies, bakeries, salons and small workshops.</p>
+      </div>
+      <div class="side">
+        <ul class="facts">
+          <li><b>Sell</b><span>A fast till with barcode scanning, printed receipts and quotes that turn into a sale. Returns are recorded properly, never deleted.</span></li>
+          <li><b>Stock</b><span>Know what you have and what it cost you, with low-stock reminders and expiry tracking.</span></li>
+          <li><b>Money</b><span>See who owes you and who you owe.</span></li>
+          <li><b>People</b><span>Each person gets their own PIN and role.</span></li>
+          <li><b>Books</b><span>Proper books, kept for you as you sell. Months you close stay closed.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-pro" aria-labelledby="t-pro" hidden>
+      <div class="copy">
+        <p class="label">For medium and large businesses</p>
+        <h3>One system for the whole team.</h3>
+        <p>Owners, managers, cashiers and accountants each sign in with their own login and see what their job needs. Every sale, purchase and payment lands in one set of books.</p>
+        <ul class="facts">
+          <li><b>E-invoices</b><span>Live for MyInvois in Malaysia and ZATCA in Saudi Arabia, sent straight from your invoices.</span></li>
+          <li><b>Branches</b><span>Stock across warehouses and branches, with transfers between them.</span></li>
+          <li><b>Control</b><span>Staff entries can wait as drafts until a manager confirms. A posted invoice is corrected with a credit note, never edited in secret.</span></li>
+          <li><b>Switching</b><span>Move from Tally or QuickBooks and preview your data before anything is created.</span></li>
+        </ul>
+        <div class="go-cta">
+          <a class="btn btn-solid" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-link="debbitmy/30min">Book a demo</a>
+        </div>
+        <p class="note"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i> runs online, so every branch sees the same numbers. You need an internet connection to use it.</p>
+      </div>
+      <div class="side">
+        <div class="shot" role="img" aria-label="The Today screen in debbitPro, showing sales, profit, money in and money out"></div>
+        <p class="label">Pick a role to see what that person can reach</p>
+        <div class="seg" id="roles" role="group" aria-label="Role">
+          <button type="button" aria-pressed="true">Owner</button>
+          <button type="button" aria-pressed="false">Accountant</button>
+          <button type="button" aria-pressed="false">Manager</button>
+          <button type="button" aria-pressed="false">Cashier</button>
+        </div>
+        <ul class="sees" id="sees">
+          <li>Profit and cash, every branch</li>
+          <li>Approvals waiting for you</li>
+          <li>Full accounts and the general ledger</li>
+          <li>Tax returns and e-invoices</li>
+          <li>Stock and purchase orders</li>
+          <li>Team and shifts</li>
+          <li>Today's sales</li>
+          <li>The till</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-x" aria-labelledby="t-x" hidden>
+      <div class="copy">
+        <p class="label">Consulting</p>
+        <h3>Big 4 thinking, without the Big 4 invoice.</h3>
+        <p>The rigour of a top-tier advisory firm, at a price a growing business can afford. Our consultants sit with owners like you, map how money, stock and work really move, and fix what is holding you back.</p>
+        <div class="go-cta">
+          <a class="btn btn-solid" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-link="debbitmy/30min">Book a call with a consultant</a>
+        </div>
+        <p class="note">The first 30 minutes are free. If we cannot help, we will tell you who can.</p>
+      </div>
+      <div class="side">
+        <ol class="steps">
+          <li><b>Look closely</b><span>We sit with your team and map how money, stock and work really move.</span></li>
+          <li><b>Fix what slows you down</b><span>Clear steps, the right controls and fewer hand-offs.</span></li>
+          <li><b>Put it to work</b><span>Set up <i class="lg lg-pro" role="img" aria-label="debbitPro"></i> or your own systems, and train your people.</span></li>
+        </ol>
+        <p class="note">No lock-in. We recommend <i class="lg lg-pro" role="img" aria-label="debbitPro"></i> when it fits. If another system fits better, we will tell you.</p>
+      </div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-next" aria-labelledby="t-next" hidden>
+      <div class="copy">
+        <p class="label"><span>For anyone with an idea</span> <span class="soon">Coming soon</span></p>
+        <h3>You ask AI for a picture. Soon you will ask it for a business.</h3>
+        <p>Describe the business you want to start. <i class="lg lg-next" role="img" aria-label="debbitNext"></i> will draft the plan, price your products, set up your till and books, and hand you a checklist for opening day. You stay in charge of every decision.</p>
+        <p class="note">AI that asks before it acts. It will draft and suggest, and you approve. It will not move money or message your customers on its own.</p>
+        <div class="go-cta">
+          <a class="btn btn-solid" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-link="debbitmy/30min">Ask to hear first</a>
+        </div>
+      </div>
+      <div class="side">
+        <form class="ask" id="ask">
+          <label class="sr" for="idea">Describe a business you want to build</label>
+          <input id="idea" autocomplete="off" placeholder="Describe a business you want to build" value="A kopitiam in Bangsar">
+          <button class="btn btn-sm btn-solid" type="submit">Build it</button>
+        </form>
+        <div class="chips" id="ideas" aria-label="Example ideas">
+          <button type="button">An online batik shop</button>
+          <button type="button">A phone repair kiosk</button>
+          <button type="button">A delivery company in Riyadh</button>
+        </div>
+        <p class="label" id="draftsFor" translate="no">What it will draft for “A kopitiam in Bangsar”</p>
+        <ul class="drafts" id="drafts">
+          <li><b>Plan</b>Who it serves, what it costs to open, when it pays back.</li>
+          <li><b>Products</b>A starting list, priced from your costs.</li>
+          <li><b>Till</b>Your products, ready for the first sale.</li>
+          <li><b>Books</b>Accounts and tax, set up from day one.</li>
+          <li><b>Team</b>Who you need, and their roles.</li>
+          <li><b>Launch</b>Licences, suppliers and first-week tasks.</li>
+        </ul>
+        <p class="note">A preview of the idea. Nothing is created yet.</p>
+      </div>
+    </div>
+
+    <div class="compare">
+      <h3>Side by side</h3>
+      <div class="scroll" tabindex="0" role="region" aria-label="Product comparison">
+        <table>
+          <thead><tr><td></td>
+            <th scope="col"><i class="lg lg-go" role="img" aria-label="debbitGO"></i></th>
+            <th scope="col"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></th>
+            <th scope="col"><i class="lg lg-x" role="img" aria-label="debbitX"></i></th>
+            <th scope="col"><i class="lg lg-next" role="img" aria-label="debbitNext"></i></th></tr></thead>
+          <tbody>
+            <tr><th scope="row">What it is</th><td>Till and back office app</td><td>Full business system</td><td>Consulting service</td><td>AI that builds a business</td></tr>
+            <tr><th scope="row">Best for</th><td>Small shops and cafés</td><td>Medium and large companies</td><td>Leaders ready to change</td><td>New founders and new branches</td></tr>
+            <tr><th scope="row">People</th><td>Owner and a few staff</td><td>Many logins, each with a role</td><td>Your leadership team</td><td>You, to start</td></tr>
+            <tr><th scope="row">Books and tax</th><td>Daily numbers and proper books</td><td>Full accounts, tax figures, e-invoices</td><td>Reviewed and improved</td><td>Set up for you</td></tr>
+            <tr><th scope="row">How to start</th><td>Book a call</td><td>Book a demo</td><td>A free first conversation</td><td>Coming soon</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </section>
 
-<footer class="sitefoot">
+<section id="words">
   <div class="wrap">
-    <div class="cols">
-      <div><a class="logo" href="#universe"><span class="lg lg-debbit dw" role="img" aria-label="debbit"></span></a><p style="margin-top:10px;max-width:22em">Run it, grow it, rethink it, imagine it. Four ways to build a business.</p></div>
-      <div><h4>Products</h4><ul><li><a href="#products" data-go="0"><i class="lg lg-go" role="img" aria-label="debbitGO"></i></a></li><li><a href="#products" data-go="1"><i class="lg lg-pro" role="img" aria-label="debbitPro"></i></a></li><li><a href="#products" data-go="2"><i class="lg lg-x" role="img" aria-label="debbitX"></i></a></li><li><a href="#products" data-go="3"><i class="lg lg-next" role="img" aria-label="debbitNext"></i></a></li></ul></div>
-      <div><h4>Company</h4><ul><li><a href="#countries">Countries</a></li><li><a href="#help">Getting started</a></li><li><a href="#contact">Contact</a></li></ul></div>
-      <div><h4>Help</h4><ul><li><a href="#faq">FAQ</a></li><li><a href="/login">Sign in</a></li></ul></div>
+    <div class="sec-head">
+      <p class="label"><i class="eqmark"></i><span>Plain words</span></p>
+      <h2 class="display">Built for owners, <em>not accountants.</em></h2>
+      <p class="lede">Your screen says it the way you would. Your accountant still gets full accounts and reports, in their language, on their own screen.</p>
     </div>
-    <div class="legal"><span>© 2026 <span class="lg lg-debbit dw" role="img" aria-label="debbit"></span></span></div>
+    <dl class="words">
+      <div><dt>Accounts receivable</dt><i class="eqmark" role="img" aria-label="means"></i><dd>Owed to you</dd></div>
+      <div><dt>Accounts payable</dt><i class="eqmark" role="img" aria-label="means"></i><dd>You owe</dd></div>
+      <div><dt>Cash and cash equivalents</dt><i class="eqmark" role="img" aria-label="means"></i><dd>Cash &amp; bank</dd></div>
+    </dl>
+    <ul class="care">
+      <li><b>Everyone signs in as themselves.</b><span>Each person has their own login and sees only their part of the business.</span></li>
+      <li><b>Nothing quietly changes.</b><span>Posted records are corrected with a clear reversal, not edited in secret.</span></li>
+      <li><b>Your data is yours.</b><span>Download complete records whenever you like, and take them with you if you leave.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="questions">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="label"><i class="eqmark"></i><span>Questions</span></p>
+      <h2 class="display">What people ask us <em>first.</em></h2>
+    </div>
+    <div class="faq">
+      <details open><summary>Do I need to know accounting?</summary><p>No. <i class="lg lg-debbit" role="img" aria-label="debbit"></i> uses plain words like “Owed to you” and “You owe”. It keeps proper books for you in the background, and your accountant gets full reports on their own screen.</p></details>
+      <details><summary>Which one is right for me?</summary><p>One shop and a small team: <i class="lg lg-go" role="img" aria-label="debbitGO"></i>. Several branches, departments or more than a handful of people who need their own logins: <i class="lg lg-pro" role="img" aria-label="debbitPro"></i>. Want experts to fix how your business runs: <i class="lg lg-x" role="img" aria-label="debbitX"></i>. Not sure? Book a call and we will tell you honestly.</p></details>
+      <details><summary>Does it do e-invoicing?</summary><p>Yes. <i class="lg lg-pro" role="img" aria-label="debbitPro"></i> sends e-invoices to MyInvois in Malaysia and to ZATCA in Saudi Arabia, and shows the status of each one.</p></details>
+      <details><summary>Does it file my tax return?</summary><p>No. <i class="lg lg-debbit" role="img" aria-label="debbit"></i> prepares the figures from your own records. You or your accountant file the return.</p></details>
+      <details><summary>Can my staff have their own logins?</summary><p>Yes. In <i class="lg lg-pro" role="img" aria-label="debbitPro"></i> each person is invited by email and gets their own permissions. In <i class="lg lg-go" role="img" aria-label="debbitGO"></i> each person gets their own PIN and role.</p></details>
+      <details><summary>Can a staff member delete a sale?</summary><p>No. A posted sale is corrected with a refund or credit note, so there is always a clear record.</p></details>
+      <details><summary>Does it use AI on my data?</summary><p>Not today. When AI features arrive they will be switched off until you turn them on, they will ask before acting, and they will never move money or message your customers on their own.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="countries">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="label"><i class="eqmark"></i><span>Where <i class="lg lg-debbit" role="img" aria-label="debbit"></i> works</span></p>
+      <h2 class="display">Ready for business in <em>58 countries.</em></h2>
+      <p class="lede">Sell, buy, keep stock and keep the books in your own currency and your own time zone.</p>
+    </div>
+    <div class="world">
+      <div class="globe-box">
+        <canvas id="globe" role="img" aria-label="A globe of the countries where debbit is ready for business. The same countries are in the list beside it."></canvas>
+        <p class="hint"><span class="mouse">Move over a country to light it up. Drag to turn the globe.</span><span class="touch">Tap a country to light it up. Drag to turn the globe.</span></p>
+      </div>
+      <div>
+        <div class="stats">
+          <div><b translate="no">58</b><span>countries, across five regions</span></div>
+          <div><b translate="no">2</b><span>live e-invoicing systems: MyInvois and ZATCA</span></div>
+          <div><b translate="no">1</b><span>set of books, wherever you sell</span></div>
+        </div>
+        <div class="cdetail" id="cdetail" translate="no"></div>
+        <details class="all" id="all">
+          <summary>See all 58 countries</summary>
+          <div class="tabs" id="regions" role="group" aria-label="Region" translate="no"></div>
+          <label class="sr" for="find">Find your country</label>
+          <input class="find" id="find" type="search" placeholder="Find your country" autocomplete="off">
+          <div class="clist" id="clist" translate="no"></div>
+        </details>
+      </div>
+    </div>
+    <p class="fine">Tax rates in <i class="lg lg-debbit" role="img" aria-label="debbit"></i> are suggestions. Your accountant or tax adviser confirms them for your business. <i class="lg lg-debbit" role="img" aria-label="debbit"></i> prepares your figures and does not file tax returns on your behalf.</p>
+  </div>
+</section>
+
+<div class="close wrap">
+  <div class="eq-anchor" id="eqB" aria-hidden="true"><i></i><i></i></div>
+  <h2 class="display">Ready when <em>you</em> are.</h2>
+  <p class="lede">Tell us about your business and we will set it up with you, step by step. Thirty minutes, online, with a real person.</p>
+  <div class="cta">
+    <a class="btn btn-solid" href="https://cal.com/debbitmy/30min?layout=month_view" target="_blank" rel="noopener" data-cal-link="debbitmy/30min">Book a 30-minute call</a>
+    <a class="btn" href="#products">See the four products</a>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="home" href="#top" aria-label="debbit, back to the top"><i class="lg lg-debbit"></i></a>
+    <div class="fam">
+      <a href="#products" aria-label="debbitGO"><i class="lg lg-go"></i></a>
+      <a href="#products" aria-label="debbitPro"><i class="lg lg-pro"></i></a>
+      <a href="#products" aria-label="debbitX"><i class="lg lg-x"></i></a>
+      <a href="#products" aria-label="debbitNext"><i class="lg lg-next"></i></a>
+    </div>
+    <span translate="no">© 2026 <i class="lg lg-debbit" role="img" aria-label="debbit"></i></span>
   </div>
 </footer>
-</div>
 </body>
 </html>
