@@ -5,7 +5,7 @@
 .legal-top nav{margin-inline-start:auto;display:flex;gap:1.25rem;font-size:var(--t-small)}
 .legal-top nav a{color:var(--muted);text-decoration:none;padding:.5rem 0}
 .legal-top nav a:hover,.legal-top nav a[aria-current="page"]{color:var(--fg)}
-.legal{max-width:44rem;margin-inline:auto;padding:3rem max(16px,env(safe-area-inset-left,0px)) 4rem}
+.legal{color:var(--fg);max-width:44rem;margin-inline:auto;padding:3rem max(16px,env(safe-area-inset-left,0px)) 4rem}
 .legal h1{font:400 var(--t-h2)/1.1 var(--display);margin-bottom:.75rem}
 .legal .updated{color:var(--muted);font-size:var(--t-small);margin-bottom:2.5rem}
 .legal h2{font:400 var(--t-h3)/1.25 var(--display);margin:2.5rem 0 .75rem}
@@ -17,3 +17,4 @@
 .legal th,.legal td{text-align:start;vertical-align:top;padding:.6rem .5rem;border-bottom:1px solid var(--line)}
 .legal th{color:var(--muted);font-weight:500}
 @media (max-width:560px){.legal table,.legal tbody,.legal tr,.legal td{display:block}.legal thead{display:none}.legal td{border:0;padding:.15rem 0}.legal tr{padding:.6rem 0;border-bottom:1px solid var(--line)}.legal td:first-child{font-weight:500}}
+.legal h1,.legal h2,.legal p,.legal li{color:inherit}
