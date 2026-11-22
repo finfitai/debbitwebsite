@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /ops
+Disallow: /dashboard
+Disallow: /onboarding
+
+Sitemap: https://www.debbit.org/sitemap.xml

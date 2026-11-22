@@ -280,6 +280,12 @@ table{border-collapse:collapse;width:100%;min-width:46rem;font-size:.95rem}
 th,td{text-align:start;padding:.95rem 1.1rem;border-top:1px solid var(--line);vertical-align:top}
 thead th{border-top:0;font-size:1.25rem;font-weight:400}
 tbody th{font:500 var(--t-label)/1.9 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.compare .hint{display:none;margin:-.25rem 0 .75rem;font:400 var(--t-label) var(--mono);letter-spacing:.06em;color:var(--faint)}
+@media (max-width:760px){
+  .compare .hint{display:block}
+  /* the row names stay in view while the products scroll past */
+  .compare tbody th,.compare thead td{position:sticky;inset-inline-start:0;z-index:1;background:var(--surface);white-space:normal;min-width:6.5rem;box-shadow:1px 0 0 var(--line)}
+}
 
 /* countries */
 .world{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(1.5rem,4vw,4rem);align-items:start}
@@ -354,6 +360,8 @@ footer .fam{display:flex;flex-wrap:wrap;gap:.9rem 1.6rem;align-items:center;font
 footer .home{font-size:1.6rem;display:flex}
 footer a{text-decoration:none}
 footer a:hover{color:var(--fg)}
+footer .legal-links{display:flex;gap:1.25rem}
+footer .legal-links a{padding:.75rem 0}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
