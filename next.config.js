@@ -6,6 +6,8 @@ module.exports = {
   async rewrites() {
     return [
       { source: '/', destination: '/index.html' },
+      { source: '/privacy', destination: '/privacy.html' },
+      { source: '/terms', destination: '/terms.html' },
       // Proxies the Windows installer from Vercel Blob storage so the
       // download URL (and the save-as filename, which browsers take from
       // the last path segment when there's no Content-Disposition override)
@@ -23,7 +25,7 @@ module.exports = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://clerk.browser.convex.cloud https://*.clerk.accounts.dev https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.clerk.accounts.dev https://challenges.cloudflare.com wss://*.supabase.co; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self' blob:; frame-ancestors 'none'",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://clerk.browser.convex.cloud https://*.clerk.accounts.dev https://clerk.debbit.org https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.clerk.accounts.dev https://clerk.debbit.org https://challenges.cloudflare.com wss://*.supabase.co; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self' blob:; frame-ancestors 'none'",
           },
           {
             key: 'X-Frame-Options',
