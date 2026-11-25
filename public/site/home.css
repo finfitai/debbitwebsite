@@ -115,6 +115,17 @@ h2.display{font-size:var(--t-h2)}
 .uni-open{overflow:hidden}
 @media (max-width:700px){.uni-hint{position:absolute;left:20px;right:20px;top:calc(4.2rem + env(safe-area-inset-top,0px));text-align:center}.uni-top{justify-content:space-between}.uni-top .lg{margin-inline-end:auto}}
 /* header */
+/* launch news bar: one quiet line above the header, scrolls away; LAUNCH_BAR in home.js switches it on */
+.launch{position:relative;border-bottom:1px solid var(--line);background:var(--surface);font-size:var(--t-small)}
+.launch::after{content:"";position:absolute;inset:auto 0 -1px;height:1px;background:linear-gradient(90deg,var(--go),var(--pro),var(--x),var(--next))}
+.launch .wrap{display:flex;align-items:center;justify-content:center;gap:.75rem;min-height:44px;padding-block:.5rem;text-align:center}
+.launch p{margin:0;line-height:1.45}
+.launch b{font-weight:600}
+.launch span{color:var(--muted)}
+.launch a{flex:none;color:var(--go-ink);font-weight:500;text-underline-offset:.2em;padding-block:.35rem}
+.launch a:hover{color:var(--fg)}
+.launch .eqmark{flex:none;width:1.1em;font-size:1rem}
+@media (max-width:560px){.launch{font-size:.85rem}.launch .wrap{display:block;padding-block:.55rem}.launch .eqmark{display:none}.launch p{display:inline}.launch a{margin-inline-start:.5em;padding-block:0}}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(var(--bg-rgb),.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:1.5rem;min-height:64px}
 .top .home{display:flex;font-size:1.75rem;text-decoration:none}

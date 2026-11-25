@@ -105,6 +105,22 @@ function T(k,v){var s=window.__t?window.__t(k):k;return s.replace(/\{(\w+)\}/g,f
 function onLang(f){addEventListener('langchange',f)}
 function lang(){return window.__lang?window.__lang():'en'}
 
+/* ---------- launch news bar ----------
+   LAUNCH_BAR is the one switch: true shows the bar above the header, false hides it.
+   On launch day it says "Launched today"; from the next day on it says "Live since". */
+var LAUNCH_BAR=true, LAUNCH_DAY=[2026,11,25];
+(function(){
+  var bar=$('#launch'), when=$('#launchWhen');
+  if(!bar||!LAUNCH_BAR) return;
+  var day=new Date(LAUNCH_DAY[0],LAUNCH_DAY[1]-1,LAUNCH_DAY[2]);
+  function render(){
+    var now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate()), date;
+    try{date=new Intl.DateTimeFormat(lang()==='en'?'en-GB':lang(),{day:'numeric',month:'long',year:'numeric'}).format(day)}catch(e){date='25 November 2026'}
+    when.textContent=today>day?T('Live since {date}.',{date:date}):T('Launched today, {date}.',{date:date});
+  }
+  bar.hidden=false; render(); onLang(render);
+})();
+
 /* ---------- the till: money in = sales + tax ---------- */
 (function(){
   var items=[{n:'Flat white',p:1200,left:32,full:40},{n:'Croissant',p:900,left:20,full:24},{n:'Iced tea',p:700,left:34,full:36}];
