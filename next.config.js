@@ -6,6 +6,9 @@ module.exports = {
   async rewrites() {
     return [
       { source: '/', destination: '/index.html' },
+      // The partner program page (public/partners/index.html, with public/site/partners.css and partners.js),
+      // a plain static page like the homepage, served at debbit.org/partners.
+      { source: '/partners', destination: '/partners/index.html' },
       // Proxies the Windows installer from Vercel Blob storage so the
       // download URL (and the save-as filename, which browsers take from
       // the last path segment when there's no Content-Disposition override)
@@ -48,15 +51,17 @@ module.exports = {
       // unsafe-eval and no inline scripts. Declared AFTER the catch-all on
       // purpose: Next.js resolves a header key from the LAST matching rule, so
       // '/' gets this policy while every other route keeps the strict one above.
-      {
-        source: '/',
+      // '/partners' gets the homepage's policy for the same reason (its own scripts, Google Fonts, the
+      // cal.com booking popup); its application form posts to /api/contact on 'self'.
+      ...['/', '/partners', '/partners/index.html'].map(source => ({
+        source,
         headers: [
           {
             key: 'Content-Security-Policy',
             value: "default-src 'self'; script-src 'self' https://app.cal.com https://cal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://app.cal.com; font-src 'self' https://fonts.gstatic.com https://app.cal.com https://cal.com; img-src 'self' data: blob: https:; connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com; frame-src https://app.cal.com https://cal.com; worker-src 'self' blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
           },
         ],
-      },
+      })),
     ]
   },
 }
